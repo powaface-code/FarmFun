@@ -515,8 +515,29 @@ body::before {
 .nav-item.active { color: var(--em); }
 .nav-item.active::after { opacity: 1; }
 .nav-item:active { opacity: .5; }
-.nav-icon  { font-size: 1.2rem; line-height: 1; }
+.nav-icon  { font-size: 1.2rem; line-height: 1; position: relative; display: inline-block; }
 .nav-label { font-size: .57rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; }
+
+/* ─── NOTIFICATION DOTS ───────────────────── */
+.notif-dot {
+  position: absolute;
+  top: -3px; right: -5px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid #000;
+  opacity: 0;
+  transition: opacity .25s, transform .25s;
+  transform: scale(0);
+  pointer-events: none;
+}
+.notif-dot.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.notif-dot.gold   { background: var(--am); box-shadow: 0 0 6px var(--am-glow); }
+.notif-dot.purple { background: var(--pu); box-shadow: 0 0 6px rgba(216,180,254,.5); }
+.notif-dot.blue   { background: var(--bl); box-shadow: 0 0 6px rgba(147,197,253,.4); }
+.prestige-pill { position: relative; }
 
 /* ─── SLIDE-UP SHEETS ─────────────────────── */
 .sheet-overlay {
@@ -939,7 +960,7 @@ const db   = firebase.firestore();
         <div class="topbar-money-rate" id="perSecDisplay">0 Kč/s</div>
       </div>
       <div class="topbar-right">
-        <button class="prestige-pill" onclick="openPrestige()">✨ Prestiž</button>
+        <button class="prestige-pill" onclick="openPrestige()">✨ Prestiž<span class="notif-dot purple" id="dot-prestige"></span></button>
         <button class="auth-pill" id="auth-btn" onclick="openAuthModal()">☁</button>
       </div>
     </div>
@@ -961,11 +982,11 @@ const db   = firebase.firestore();
       <span class="nav-label">Farmy</span>
     </button>
     <button class="nav-item" id="nav-managers" onclick="openSheet('managers-sheet')">
-      <span class="nav-icon">👔</span>
+      <span class="nav-icon">👔<span class="notif-dot gold" id="dot-managers"></span></span>
       <span class="nav-label">Manažeři</span>
     </button>
     <button class="nav-item" id="nav-upgrades" onclick="openSheet('upgrades-sheet')">
-      <span class="nav-icon">⚡</span>
+      <span class="nav-icon">⚡<span class="notif-dot blue" id="dot-upgrades"></span></span>
       <span class="nav-label">Upgrady</span>
     </button>
     <button class="nav-item" id="nav-stats" onclick="openSheet('stats-sheet')">
@@ -1518,6 +1539,13 @@ function updateMoneyDisplay() {
   document.getElementById('perSecDisplay').textContent = fmt(getPerSec())+'/s';
 }
 
+function updateNotifications() {
+  const setDot = (id, on) => document.getElementById(id)?.classList.toggle('visible', on);
+  setDot('dot-prestige', calcPrestigeSeeds() >= 1);
+  setDot('dot-managers', MANAGERS.some(m => !state.managers[m.id] && isUnlocked(m.bizId) && state.money >= m.price));
+  setDot('dot-upgrades', UPGRADES.some(u => !state.upgrades[u.id] && isUnlocked(u.bizId) && state.money >= u.price));
+}
+
 function updateAffordability() {
   for (const def of BUSINESSES) {
     const btn = document.getElementById(`bb-${def.id}`);
@@ -1572,6 +1600,7 @@ function gameLoop() {
   lastTime = now;
   updateMoneyDisplay();
   updateAffordability();
+  updateNotifications();
   updateStats();
   if (now - lastSaveTime > 10000) { saveState(); lastSaveTime = now; }
   requestAnimationFrame(gameLoop);

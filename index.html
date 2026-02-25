@@ -1142,25 +1142,25 @@ const UPGRADES = [
   {id:13,bizId:4,name:'Chladírenský vůz', emoji:'🚛',desc:'Rychlejší transport ×3',               price:80000000,  mult:3},
   {id:14,bizId:4,name:'Export do EU',     emoji:'🇪🇺',desc:'Evropský trh pro brokolici ×5',       price:5e9,       mult:5},
   // ── HROZNY (3 upgrady)
-  {id:15,bizId:5,name:'Starý vinohrad',   emoji:'🍇',desc:'Letité révy dávají víc ×2',            price:10000000,  mult:2},
-  {id:16,bizId:5,name:'Vinný sklep',      emoji:'🏚️',desc:'Vlastní zrání vína ×3',               price:800000000, mult:3},
-  {id:17,bizId:5,name:'Château label',    emoji:'🍷',desc:'Luxusní značka pro víno ×5',           price:5e10,      mult:5},
+  {id:15,bizId:5,name:'Starý vinohrad',   emoji:'🍇',desc:'×2 příjem + cooldown na polovinu',     price:10000000,  mult:2, timerDiv:2},
+  {id:16,bizId:5,name:'Vinný sklep',      emoji:'🏚️',desc:'×2 příjem + cooldown na polovinu',     price:800000000, mult:2, timerDiv:2},
+  {id:17,bizId:5,name:'Château label',    emoji:'🍷',desc:'×2 příjem + cooldown na polovinu',     price:5e10,      mult:2, timerDiv:2},
   // ── MELOUN (3 upgrady)
-  {id:18,bizId:6,name:'Včelí opylovači',  emoji:'🐝',desc:'Lepší opylení melounů ×2',             price:100000000, mult:2},
-  {id:19,bizId:6,name:'Prémiové semínko', emoji:'🌱',desc:'Japonské odrůdy ×3',                   price:8e9,       mult:3},
-  {id:20,bizId:6,name:'Megameloun',       emoji:'🍉',desc:'Rekordní melouny ×5',                  price:5e11,      mult:5},
+  {id:18,bizId:6,name:'Včelí opylovači',  emoji:'🐝',desc:'×2 příjem + cooldown na polovinu',     price:100000000, mult:2, timerDiv:2},
+  {id:19,bizId:6,name:'Prémiové semínko', emoji:'🌱',desc:'×2 příjem + cooldown na polovinu',     price:8e9,       mult:2, timerDiv:2},
+  {id:20,bizId:6,name:'Megameloun',       emoji:'🍉',desc:'×2 příjem + cooldown na polovinu',     price:5e11,      mult:2, timerDiv:2},
   // ── AVOKÁDO (3 upgrady)
-  {id:21,bizId:7,name:'Kalifornský sad',  emoji:'🥑',desc:'Klimatické podmínky ×2',               price:1e9,       mult:2},
-  {id:22,bizId:7,name:'Influencer deal',  emoji:'📱',desc:'Virální avokádo na TikToku ×3',        price:8e10,      mult:3},
-  {id:23,bizId:7,name:'Avokádo futures',  emoji:'📈',desc:'Komoditní trh s avokádem ×5',          price:5e12,      mult:5},
+  {id:21,bizId:7,name:'Kalifornský sad',  emoji:'🥑',desc:'×2 příjem + cooldown na polovinu',     price:1e9,       mult:2, timerDiv:2},
+  {id:22,bizId:7,name:'Influencer deal',  emoji:'📱',desc:'×2 příjem + cooldown na polovinu',     price:8e10,      mult:2, timerDiv:2},
+  {id:23,bizId:7,name:'Avokádo futures',  emoji:'📈',desc:'×2 příjem + cooldown na polovinu',     price:5e12,      mult:2, timerDiv:2},
   // ── ANANAS (3 upgrady)
-  {id:24,bizId:8,name:'Tropický skleník', emoji:'🍍',desc:'Simulace tropů ×2',                    price:1e10,      mult:2},
-  {id:25,bizId:8,name:'Letecký export',   emoji:'✈️',desc:'Přímý export do světa ×3',             price:8e11,      mult:3},
-  {id:26,bizId:8,name:'Ananas imperium',  emoji:'👑',desc:'Monopol na ananas ×5',                 price:5e13,      mult:5},
+  {id:24,bizId:8,name:'Tropický skleník', emoji:'🍍',desc:'×2 příjem + cooldown na polovinu',     price:1e10,      mult:2, timerDiv:2},
+  {id:25,bizId:8,name:'Letecký export',   emoji:'✈️',desc:'×2 příjem + cooldown na polovinu',     price:8e11,      mult:2, timerDiv:2},
+  {id:26,bizId:8,name:'Ananas imperium',  emoji:'👑',desc:'×2 příjem + cooldown na polovinu',     price:5e13,      mult:2, timerDiv:2},
   // ── CHILLI (3 upgrady)
-  {id:27,bizId:9,name:'Ghost pepper',     emoji:'🌶️',desc:'Nejpálivější odrůda ×2',               price:1e11,      mult:2},
-  {id:28,bizId:9,name:'Omáčky & export',  emoji:'🔥',desc:'Vlastní značka omáček ×3',             price:8e12,      mult:3},
-  {id:29,bizId:9,name:'Chilli světovláda',emoji:'🌍',desc:'Globální dominance chilli ×5',         price:5e14,      mult:5},
+  {id:27,bizId:9,name:'Ghost pepper',     emoji:'🌶️',desc:'×2 příjem + cooldown na polovinu',     price:1e11,      mult:2, timerDiv:2},
+  {id:28,bizId:9,name:'Omáčky & export',  emoji:'🔥',desc:'×2 příjem + cooldown na polovinu',     price:8e12,      mult:2, timerDiv:2},
+  {id:29,bizId:9,name:'Chilli světovláda',emoji:'🌍',desc:'×2 příjem + cooldown na polovinu',     price:5e14,      mult:2, timerDiv:2},
 ];
 
 const COST_GROWTH = 1.15;
@@ -1185,11 +1185,11 @@ function normalizeBuyMode(m) {
 
 let state = loadState() || {
   money:0, totalEarned:0, buyMode:'1',
-  businesses: BUSINESSES.map(b=>({id:b.id,count:b.id===0?1:0,progress:0,running:false,managerHired:false,upgradeMult:1})),
+  businesses: BUSINESSES.map(b=>({id:b.id,count:b.id===0?1:0,progress:0,running:false,managerHired:false,upgradeMult:1,timerMult:1})),
   managers:{}, upgrades:{}, globalUpgrades:{}, prestigeCount:0, totalSeeds:0,
 };
 // Timery nelze obnovit po restartu – reset running/progress
-if (state.businesses) state.businesses.forEach(b => { b.running = false; b.progress = 0; });
+if (state.businesses) state.businesses.forEach(b => { b.running = false; b.progress = 0; if (!b.timerMult) b.timerMult = 1; });
 // Migrace starých save souborů
 if (!state.globalUpgrades) state.globalUpgrades = {};
 
@@ -1312,6 +1312,7 @@ function buyUpgrade(upgradeId) {
   state.money -= upg.price;
   state.upgrades[upgradeId] = true;
   state.businesses[upg.bizId].upgradeMult *= upg.mult;
+  if (upg.timerDiv) state.businesses[upg.bizId].timerMult /= upg.timerDiv;
   notify(`⚡ ${upg.name} zakoupeno!`, 'gold');
   render(); saveState();
 }
@@ -1334,7 +1335,7 @@ function startProgress(bizId) {
   if (bs.running || bs.count===0) return;
   bs.running=true; bs.progress=0;
   clearInterval(progressTimers[bizId]);
-  const startTime = Date.now(), duration = def.timer*1000;
+  const startTime = Date.now(), duration = def.timer*(bs.timerMult||1)*1000;
   progressTimers[bizId] = setInterval(()=>{
     bs.progress = Math.min((Date.now()-startTime)/duration, 1);
     updateProgressBar(bizId);
@@ -1464,7 +1465,7 @@ function renderFarms() {
           <div class="fc-name">${def.name}</div>
           <div class="fc-stats">
             <span class="hi">💰 ${fmt(income)}</span>
-            <span class="dot">·</span><span>⏱ ${def.timer}s</span>
+            <span class="dot">·</span><span>⏱ ${(def.timer*(bs.timerMult||1)).toFixed(1).replace('.0','')}s</span>
             <span class="dot">·</span><span class="hi2">×${getMilestoneMult(def.id)}</span>
           </div>
         </div>

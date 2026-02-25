@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#08090f">
+<meta name="apple-mobile-web-app-title" content="Farmářský Magnát">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230d1117'/><text y='.9em' font-size='72' x='14'>🌱</text></svg>">
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Farm%C3%A1%C5%99sk%C3%BD+Magn%C3%A1t%22%2C%22short_name%22%3A%22Magn%C3%A1t%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230d1117%22%2C%22theme_color%22%3A%22%230d1117%22%7D">
+<title>Farmářský Magnát</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   FARMÁŘSKÝ MAGNÁT · Neon Harvest Edition
+   Paleta: půlnoční inkoust + smaragd + jantar
+   Fonty: Sora (UI) · DM Serif Display (čísla)
+═══════════════════════════════════════════════ */
+:root {
+  /* Pozadí černé, karty výrazně světlejší šedé */
+  --bg:       #000000;
+  --s1:       #1e1e1e;
+  --s2:       #282828;
+  --s3:       #323232;
+  --s4:       #3c3c3c;
+
+  /* Akcenty — velmi živé, vysoká saturace */
+  --em:       #00ffb3;          /* neonový smaragd */
+  --em-dim:   rgba(0,255,179,.15);
+  --em-glow:  rgba(0,255,179,.35);
+  --am:       #ffe566;          /* sluneční zlatá */
+  --am-dim:   rgba(255,229,102,.15);
+  --am-glow:  rgba(255,229,102,.35);
+  --pu:       #d8b4fe;          /* světlá levandule */
+  --pu-dim:   rgba(216,180,254,.15);
+  --bl:       #93c5fd;          /* jasná modrá */
+  --re:       #fca5a5;          /* světlá červená */
+
+  /* Text — maximum kontrastu */
+  --t1:  #ffffff;
+  --t2:  #b8bfd0;
+  --t3:  #606880;
+
+  /* Okraje — dobře viditelné */
+  --bd:  rgba(255,255,255,.12);
+  --bd2: rgba(255,255,255,.20);
+
+  /* Poloměry */
+  --r1: 10px;
+  --r2: 16px;
+  --r3: 22px;
+  --r4: 30px;
+
+  /* Fonty */
+  --f:  'Sora', system-ui, sans-serif;
+  --fd: 'DM Serif Display', Georgia, serif;
+}
+
+/* ─── Reset ───────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+html { -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--f);
+  background: var(--bg);
+  color: var(--t1);
+  min-height: 100vh;
+}
+
+/* ─── Ambientní gradient pozadí ───────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 35% at 20% 0%,   rgba(0,255,179,.10) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 100%,  rgba(216,180,254,.07) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 50% 50%,   rgba(255,216,77,.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  /* Jemný box-shadow na desktopu aby byl oddělen od pozadí */
+  box-shadow: 0 0 60px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+}
+
+/* Na desktopu zobrazit tmavší pozadí za appkou */
+@media (min-width: 500px) {
+  body {
+    background: #050505;
+  }
+  body::before {
+    background:
+      radial-gradient(ellipse 40% 50% at 25% 30%, rgba(0,229,160,.04) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 75% 70%, rgba(167,139,250,.03) 0%, transparent 55%);
+  }
+}
+
+/* ─── TOP BAR ─────────────────────────────── */
+#topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 9px;
+  background: rgba(0,0,0,.98);
+  border-bottom: 1px solid var(--bd);
+  position: relative;
+}
+/* PWA mód — přidej místo pro Dynamic Island / notch */
+.pwa-mode #topbar {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+}
+#topbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--em-glow) 40%, var(--am-glow) 70%, transparent 100%);
+}
+
+.topbar-logo {
+  font-family: var(--fd);
+  font-size: 1.2rem;
+  color: var(--em);
+  white-space: nowrap;
+  text-shadow: 0 0 18px var(--em-glow);
+  letter-spacing: -.3px;
+}
+
+.topbar-money {
+  flex: 1;
+  text-align: center;
+}
+.topbar-money-amount {
+  font-family: var(--fd);
+  font-size: 1.3rem;
+  color: var(--am);
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 0 18px var(--am-glow);
+}
+.topbar-money-rate {
+  font-size: .65rem;
+  color: var(--t2);
+  font-weight: 500;
+  margin-top: 1px;
+  letter-spacing: .2px;
+}
+
+.prestige-pill {
+  background: var(--pu-dim);
+  border: 1px solid rgba(167,139,250,.28);
+  border-radius: 50px;
+  padding: 7px 12px;
+  color: var(--pu);
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: .71rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .18s;
+  -webkit-appearance: none;
+}
+.prestige-pill:active { opacity: .7; transform: scale(.95); }
+
+/* ─── BUY MODE BAR ────────────────────────── */
+#buy-mode-row {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(0,0,0,.96);
+  border-bottom: 1px solid var(--bd);
+}
+.bm-btn {
+  flex: 1;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: var(--r1);
+  padding: 6px 4px;
+  color: var(--t2);
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: .75rem;
+  cursor: pointer;
+  transition: all .2s;
+  -webkit-appearance: none;
+  white-space: nowrap;
+}
+.bm-btn.active {
+  background: var(--em-dim);
+  border-color: rgba(0,229,160,.35);
+  color: var(--em);
+  box-shadow: 0 0 12px var(--em-glow);
+}
+.bm-btn:active:not(.active) { opacity: .55; }
+
+/* ─── SCROLL & FARM LIST ──────────────────── */
+#scroll-area { padding: 0 0 80px; }
+#farmList { padding: 8px 10px 0; }
+
+/* ─── FARM CARD ───────────────────────────── */
+.farm-card {
+  background: var(--s1);
+  border: 1px solid var(--bd);
+  border-radius: var(--r2);
+  margin-bottom: 6px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color .2s;
+}
+
+
+/* Subtilní top highlight */
+.farm-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
+}
+/* Barevný levý proužek — nastaven inline per farma */
+.farm-card::after {
+  content: '';
+  position: absolute;
+  top: 12px; left: 0; bottom: 12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--card-color, var(--em));
+  opacity: .6;
+}
+
+.farm-card.affordable {
+  border-color: rgba(0,229,160,.2);
+  box-shadow: 0 0 0 1px rgba(0,229,160,.06), 0 4px 24px rgba(0,229,160,.06);
+}
+.farm-card.locked {
+  opacity: .35;
+  filter: saturate(.3);
+}
+
+/* Card top */
+.fc-top {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px 0;
+  gap: 9px;
+}
+.fc-icon {
+  width: 42px; height: 42px;
+  border-radius: var(--r1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  position: relative;
+  border: 1px solid var(--bd2);
+}
+.fc-icon .badge {
+  position: absolute;
+  bottom: -4px; right: -5px;
+  background: var(--re);
+  color: #fff;
+  font-size: .56rem;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 20px;
+  border: 2px solid var(--s1);
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
+.fc-meta { flex: 1; min-width: 0; }
+.fc-name {
+  font-size: .84rem;
+  font-weight: 700;
+  color: var(--t1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -.1px;
+}
+.fc-stats {
+  font-size: .66rem;
+  color: var(--t2);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.fc-stats .hi  { color: var(--am); font-weight: 700; }
+.fc-stats .hi2 { color: var(--em); font-weight: 700; }
+.fc-stats .dot { color: var(--t3); }
+
+/* Milestone badges */
+.fc-milestones {
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+  margin: 4px 12px 0;
+}
+.ms-badge {
+  font-size: .52rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 20px;
+  background: var(--s3);
+  color: var(--t3);
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+  letter-spacing: .2px;
+  transition: all .35s;
+}
+.ms-badge.done {
+  background: var(--am-dim);
+  color: var(--am);
+  border-color: rgba(245,200,66,.22);
+  text-shadow: 0 0 8px var(--am-glow);
+}
+
+/* Milestone progress */
+.fc-ms-progress {
+  margin: 4px 12px 0;
+  height: 10px;
+  background: var(--s3);
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--bd);
+}
+.fc-ms-bar {
+  height: 100%;
+  border-radius: 50px;
+  opacity: .7;
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+}
+.fc-ms-label {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .54rem; font-weight: 800;
+  color: rgba(255,255,255,.8);
+  text-shadow: 0 1px 3px rgba(0,0,0,.8);
+  letter-spacing: .3px;
+}
+
+/* Harvest progress */
+.fc-progress {
+  margin: 5px 12px 0;
+  height: 20px;
+  background: var(--s3);
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid var(--bd);
+}
+.fc-progress-bar {
+  height: 100%;
+  border-radius: 50px;
+  transition: width .07s linear;
+  position: relative;
+}
+/* Shimmer effect na progress bar */
+.fc-progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; right: 0; bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.15) 50%, transparent 100%);
+  animation: shimmer 1.8s infinite;
+}
+@keyframes shimmer {
+  0%   { left: -100%; }
+  100% { left: 200%; }
+}
+.fc-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 4px; left: 8px; right: 8px; height: 4px;
+  background: rgba(255,255,255,.18);
+  border-radius: 10px;
+}
+.fc-progress-label {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .6rem; font-weight: 800;
+  color: rgba(255,255,255,.9);
+  text-shadow: 0 1px 3px rgba(0,0,0,.9);
+  letter-spacing: .2px;
+}
+
+/* Actions row */
+.fc-actions {
+  display: flex;
+  gap: 7px;
+  padding: 6px 12px 10px;
+  margin-top: 4px;
+}
+
+.fc-harvest-btn {
+  width: 44px; height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--r1);
+  border: 1px solid var(--bd);
+  background: var(--s3);
+  color: var(--t3);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .18s;
+  -webkit-appearance: none;
+}
+.fc-harvest-btn.ready {
+  background: var(--em-dim);
+  border-color: rgba(0,229,160,.35);
+  color: var(--em);
+  box-shadow: 0 0 14px var(--em-glow), inset 0 1px 0 rgba(0,229,160,.1);
+}
+.fc-harvest-btn.auto {
+  background: rgba(96,165,250,.08);
+  border-color: rgba(96,165,250,.3);
+  color: var(--bl);
+  font-size: .6rem;
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+.fc-harvest-btn:active:not(:disabled) { transform: scale(.88); }
+.fc-harvest-btn:disabled { opacity: .3; cursor: default; transform: none; }
+
+.fc-buy-btn {
+  flex: 1;
+  height: 38px;
+  border-radius: var(--r1);
+  border: 1px solid rgba(245,200,66,.2);
+  background: var(--am-dim);
+  color: var(--am);
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: .77rem;
+  cursor: pointer;
+  transition: all .18s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 12px;
+  -webkit-appearance: none;
+  letter-spacing: .05px;
+}
+.fc-buy-btn:active:not(:disabled) {
+  transform: scale(.97);
+  box-shadow: 0 0 18px var(--am-glow);
+}
+.fc-buy-btn:disabled { opacity: .25; cursor: default; }
+.fc-buy-btn.locked-btn {
+  background: var(--s3);
+  border-color: var(--bd);
+  color: var(--t3);
+}
+.fc-lock-info {
+  font-size: .62rem; color: var(--t3);
+  text-align: center;
+  padding: 3px 14px 10px;
+  letter-spacing: .2px;
+}
+
+/* ─── BOTTOM NAV ──────────────────────────── */
+#bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  padding-bottom: env(safe-area-inset-bottom,0px);
+  background: rgba(0,0,0,.99);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid var(--bd);
+  display: flex;
+  z-index: 100;
+  box-shadow: 0 -6px 30px rgba(0,0,0,.5);
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--t3);
+  font-family: var(--f);
+  gap: 3px;
+  transition: color .2s;
+  position: relative;
+}
+.nav-item::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 25%; right: 25%;
+  height: 2px;
+  background: var(--em);
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 0 8px var(--em-glow);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.nav-item.active { color: var(--em); }
+.nav-item.active::after { opacity: 1; }
+.nav-item:active { opacity: .5; }
+.nav-icon  { font-size: 1.2rem; line-height: 1; }
+.nav-label { font-size: .57rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; }
+
+/* ─── SLIDE-UP SHEETS ─────────────────────── */
+.sheet-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  backdrop-filter: blur(8px);
+  z-index: 80;
+  opacity: 0; pointer-events: none;
+  transition: opacity .28s;
+}
+.sheet-overlay.visible { opacity: 1; pointer-events: all; }
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  background: #1e1e1e;
+  border-radius: var(--r4) var(--r4) 0 0;
+  border: 1px solid var(--bd2);
+  border-bottom: none;
+  z-index: 90;
+  transform: translateY(110%);
+  transition: transform .35s cubic-bezier(.32,.72,0,1);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 -12px 50px rgba(0,0,0,.6);
+}
+/* Top glow line na sheetu */
+.sheet::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--em-glow), transparent);
+}
+.sheet.open { transform: translateX(-50%) translateY(0); }
+
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--s4);
+  border-radius: 2px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+.sheet-header {
+  flex-shrink: 0;
+  padding: 10px 18px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--bd);
+}
+.sheet-title { font-size: 1rem; font-weight: 800; color: var(--t1); letter-spacing: -.2px; }
+.sheet-close {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--s3); border: 1px solid var(--bd);
+  color: var(--t2); font-size: .9rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-appearance: none; transition: all .15s;
+}
+.sheet-close:active { background: var(--s4); }
+.sheet-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px 14px;
+  padding-bottom: calc(env(safe-area-inset-bottom,0px) + 14px);
+}
+
+/* ─── MANAGER CARDS ───────────────────────── */
+.mgr-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: var(--r2);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  overflow: hidden;
+}
+.mgr-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.05), transparent);
+}
+.mgr-card:active:not(.biz-locked) { transform: scale(.98); opacity: .75; }
+.mgr-card.hired {
+  border-color: rgba(0,229,160,.25);
+  background: linear-gradient(135deg, rgba(0,255,179,.08), var(--s2));
+}
+.mgr-card.cant-afford { opacity: .45; }
+.mgr-card.biz-locked  { opacity: .28; cursor: not-allowed; }
+
+.mgr-emoji { font-size: 1.7rem; flex-shrink: 0; width: 40px; text-align: center; }
+.mgr-info  { flex: 1; min-width: 0; }
+.mgr-name  { font-size: .87rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--t1); }
+.mgr-desc  { font-size: .68rem; color: var(--t2); margin-top: 1px; }
+.mgr-right { flex-shrink: 0; text-align: right; }
+.mgr-price { font-family: var(--fd); font-size: .85rem; font-weight: 700; color: var(--am); }
+.mgr-hired-badge {
+  background: rgba(0,229,160,.1);
+  color: var(--em); font-size: .65rem; font-weight: 800;
+  padding: 4px 10px; border-radius: 20px;
+  border: 1px solid rgba(0,229,160,.25);
+  letter-spacing: .3px;
+}
+
+/* ─── UPGRADE CARDS ───────────────────────── */
+.upg-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: var(--r2);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.upg-card:active:not(.bought):not(.biz-locked) { transform: scale(.98); }
+.upg-card.bought     { opacity: .35; cursor: default; }
+.upg-card.cant-afford{ opacity: .45; }
+.upg-card.biz-locked { opacity: .25; cursor: not-allowed; }
+.upg-emoji { font-size: 1.45rem; flex-shrink: 0; width: 32px; text-align: center; }
+.upg-info  { flex: 1; min-width: 0; }
+.upg-name  { font-size: .85rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--t1); }
+.upg-desc  { font-size: .67rem; color: var(--t2); margin-top: 1px; }
+.upg-price { flex-shrink: 0; font-family: var(--fd); font-size: .85rem; font-weight: 700; color: var(--am); }
+.upg-done  { flex-shrink: 0; font-size: .68rem; font-weight: 700; color: var(--em); }
+
+/* ─── STATS SHEET ─────────────────────────── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.stat-tile {
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: var(--r2);
+  padding: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-tile::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--am-dim), transparent);
+}
+.stat-tile-label {
+  font-size: .6rem; color: var(--t2); font-weight: 600;
+  text-transform: uppercase; letter-spacing: .6px;
+}
+.stat-tile-value {
+  font-family: var(--fd);
+  font-size: 1.2rem; font-weight: 700;
+  color: var(--am); margin-top: 3px;
+  text-shadow: 0 0 12px var(--am-glow);
+}
+.prestige-info {
+  font-size: .79rem; color: var(--t2); line-height: 1.55; margin-bottom: 12px;
+}
+.prestige-seeds-preview {
+  font-family: var(--fd);
+  font-size: 1.55rem; font-weight: 700;
+  color: var(--pu); text-align: center;
+  margin-bottom: 10px;
+  text-shadow: 0 0 22px rgba(167,139,250,.4);
+}
+.prestige-sheet-btn {
+  width: 100%; padding: 15px;
+  border-radius: var(--r2); border: none;
+  background: linear-gradient(135deg, #7c3aed, #4c1d95);
+  color: #c4b5fd;
+  font-family: var(--f); font-size: .92rem; font-weight: 800;
+  cursor: pointer; margin-top: 4px;
+  -webkit-appearance: none; transition: opacity .15s;
+  box-shadow: 0 4px 22px rgba(91,33,182,.4);
+}
+.prestige-sheet-btn:active { opacity: .8; }
+
+/* ─── MODAL ───────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.8);
+  backdrop-filter: blur(12px);
+  z-index: 200;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom,0px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .22s;
+}
+.modal-overlay.visible { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: #1e1e1e;
+  border-radius: var(--r4) var(--r4) var(--r3) var(--r3);
+  padding: 28px 20px 22px;
+  width: 100%; max-width: 460px;
+  text-align: center;
+  border: 1px solid var(--bd2);
+  box-shadow: 0 -10px 50px rgba(0,0,0,.6);
+  position: relative;
+}
+.modal-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 15%; right: 15%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--pu-dim), transparent);
+}
+.modal-title {
+  font-family: var(--fd);
+  font-size: 1.55rem; color: var(--pu); margin-bottom: 10px;
+  text-shadow: 0 0 22px rgba(167,139,250,.4);
+}
+.modal-body { font-size: .87rem; color: var(--t2); line-height: 1.65; margin-bottom: 22px; }
+.modal-btns { display: flex; gap: 10px; }
+.modal-cancel {
+  flex: 1; padding: 14px;
+  background: var(--s3); border: 1px solid var(--bd);
+  border-radius: var(--r2); color: var(--t2);
+  font-family: var(--f); font-size: .9rem; font-weight: 700;
+  cursor: pointer; -webkit-appearance: none; transition: opacity .15s;
+}
+.modal-confirm {
+  flex: 2; padding: 14px;
+  background: linear-gradient(135deg, #7c3aed, #4c1d95);
+  border: none; border-radius: var(--r2);
+  color: #c4b5fd; font-family: var(--f); font-size: .9rem; font-weight: 800;
+  cursor: pointer; -webkit-appearance: none;
+  box-shadow: 0 4px 18px rgba(91,33,182,.4); transition: opacity .15s;
+}
+.modal-confirm:active, .modal-cancel:active { opacity: .75; }
+
+/* ─── TOASTS ──────────────────────────────── */
+#toasts {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 20px);
+  max-width: 460px;
+  z-index: 999;
+  display: flex; flex-direction: column; gap: 6px;
+  pointer-events: none;
+}
+.toast {
+  background: rgba(28,28,28,.98);
+  border: 1px solid var(--bd2);
+  border-radius: var(--r2);
+  padding: 9px 14px;
+  font-size: .8rem; font-weight: 700;
+  color: var(--em);
+  backdrop-filter: blur(14px);
+  animation: toastIn .22s ease, toastOut .35s ease 2.7s forwards;
+  box-shadow: 0 4px 18px rgba(0,0,0,.5), 0 0 0 1px rgba(0,229,160,.06);
+}
+.toast.gold   { color: var(--am); border-color: rgba(245,200,66,.25); box-shadow: 0 4px 18px rgba(0,0,0,.5), 0 0 0 1px rgba(245,200,66,.06); }
+.toast.purple { color: var(--pu); border-color: rgba(167,139,250,.25); }
+@keyframes toastIn  { from { transform: translateY(-8px) scale(.95); opacity:0; } to { transform:translateY(0) scale(1); opacity:1; } }
+@keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateY(-5px); } }
+
+/* ─── FLOAT MONEY ─────────────────────────── */
+.float-money {
+  position: fixed;
+  pointer-events: none;
+  font-family: var(--fd);
+  font-size: 1rem;
+  color: var(--am);
+  text-shadow: 0 0 12px var(--am-glow), 0 1px 4px rgba(0,0,0,.9);
+  z-index: 999;
+  animation: floatUp 1.1s ease forwards;
+}
+@keyframes floatUp {
+  0%   { transform:translateY(0) scale(1); opacity:1; }
+  60%  { opacity:1; }
+  100% { transform:translateY(-55px) scale(.82); opacity:0; }
+}
+
+/* ─── LOCKED ──────────────────────────────── */
+.biz-locked { opacity:.3; cursor:not-allowed; }
+.biz-locked:active { opacity:.3; }
+
+/* ─── HARVEST FLASH ──────────────────────── */
+@keyframes harvestFlash {
+  0%   { box-shadow: 0 0 0 0 rgba(245,200,66,0); }
+  30%  { box-shadow: 0 0 0 6px rgba(245,200,66,.2), inset 0 0 20px rgba(245,200,66,.06); }
+  100% { box-shadow: 0 0 0 0 rgba(245,200,66,0); }
+}
+.harvest-flash { animation: harvestFlash .38s ease; }
+
+/* ─── SCROLLBAR ───────────────────────────── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--s4); border-radius: 10px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SCROLL AREA — topbar a buy-mode jsou součástí scrollu -->
+  <div id="scroll-area">
+
+    <!-- TOP BAR -->
+    <div id="topbar">
+      <div class="topbar-logo">🌱 Magnát</div>
+      <div class="topbar-money">
+        <div class="topbar-money-amount" id="moneyDisplay">0 Kč</div>
+        <div class="topbar-money-rate" id="perSecDisplay">0 Kč/s</div>
+      </div>
+      <button class="prestige-pill" onclick="openPrestige()">✨ Prestiž</button>
+    </div>
+
+    <!-- BUY MODE ROW -->
+    <div id="buy-mode-row">
+      <button class="bm-btn active" id="buymode-1"   onclick="setBuyMode('1',this)">× 1</button>
+      <button class="bm-btn"        id="buymode-ms"  onclick="setBuyMode('milestone',this)">Milník</button>
+      <button class="bm-btn"        id="buymode-max" onclick="setBuyMode('max',this)">Max</button>
+    </div>
+
+    <div id="farmList" style="padding: 6px 8px 0;"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav id="bottom-nav">
+    <button class="nav-item active" id="nav-farms" onclick="showView('farms')">
+      <span class="nav-icon">🌾</span>
+      <span class="nav-label">Farmy</span>
+    </button>
+    <button class="nav-item" id="nav-managers" onclick="openSheet('managers-sheet')">
+      <span class="nav-icon">👔</span>
+      <span class="nav-label">Manažeři</span>
+    </button>
+    <button class="nav-item" id="nav-upgrades" onclick="openSheet('upgrades-sheet')">
+      <span class="nav-icon">⚡</span>
+      <span class="nav-label">Upgrady</span>
+    </button>
+    <button class="nav-item" id="nav-stats" onclick="openSheet('stats-sheet')">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">Statistiky</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- ── MANAGERS SHEET ─────────────────── -->
+<div class="sheet-overlay" id="overlay-managers-sheet" onclick="closeSheet('managers-sheet')"></div>
+<div class="sheet" id="managers-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">👔 Manažeři</span>
+    <button class="sheet-close" onclick="closeSheet('managers-sheet')">✕</button>
+  </div>
+  <div class="sheet-scroll" id="managers-list"></div>
+</div>
+
+<!-- ── UPGRADES SHEET ─────────────────── -->
+<div class="sheet-overlay" id="overlay-upgrades-sheet" onclick="closeSheet('upgrades-sheet')"></div>
+<div class="sheet" id="upgrades-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">⚡ Upgrady</span>
+    <button class="sheet-close" onclick="closeSheet('upgrades-sheet')">✕</button>
+  </div>
+  <div class="sheet-scroll" id="upgrades-list"></div>
+</div>
+
+<!-- ── STATS SHEET ─────────────────────── -->
+<div class="sheet-overlay" id="overlay-stats-sheet" onclick="closeSheet('stats-sheet')"></div>
+<div class="sheet" id="stats-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">📊 Statistiky & Prestiž</span>
+    <button class="sheet-close" onclick="closeSheet('stats-sheet')">✕</button>
+  </div>
+  <div class="sheet-scroll">
+    <div class="stat-grid">
+      <div class="stat-tile"><div class="stat-tile-label">Celkem vyděláno</div><div class="stat-tile-value" id="st-total">0 Kč</div></div>
+      <div class="stat-tile"><div class="stat-tile-label">Příjem/s</div><div class="stat-tile-value" id="st-rate">0 Kč</div></div>
+      <div class="stat-tile"><div class="stat-tile-label">Farmy</div><div class="stat-tile-value" id="st-farms">1</div></div>
+      <div class="stat-tile"><div class="stat-tile-label">Manažeři</div><div class="stat-tile-value" id="st-mgr">0</div></div>
+      <div class="stat-tile"><div class="stat-tile-label">Semínka 🌿</div><div class="stat-tile-value" id="st-seeds">0</div></div>
+      <div class="stat-tile"><div class="stat-tile-label">Prestiže</div><div class="stat-tile-value" id="st-prestige">0</div></div>
+    </div>
+    <div style="background:rgba(163,113,247,0.08);border:1px solid rgba(163,113,247,0.2);border-radius:var(--r-md);padding:14px;margin-bottom:12px;">
+      <div style="font-weight:800;color:var(--purple);margin-bottom:6px;">✨ Prestiž reset</div>
+      <div class="prestige-info">Resetuj farmu výměnou za Semínka moudrosti. Každé semínko trvale přidá <strong style="color:var(--purple)">+10%</strong> ke všem výdělkům.</div>
+      <div class="prestige-seeds-preview" id="st-seeds-preview">Získáš: 0 🌿</div>
+      <div style="font-size:0.75rem;color:var(--text2);text-align:center;margin-bottom:10px;">Aktuální bonus: <strong style="color:var(--purple)" id="st-prestige-mult">×1.0</strong></div>
+      <button class="prestige-sheet-btn" onclick="openPrestige()">✨ Spustit Prestiž</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PRESTIGE MODAL ─────────────────── -->
+<div class="modal-overlay" id="prestige-modal">
+  <div class="modal-box">
+    <div class="modal-title">✨ Prestiž</div>
+    <div class="modal-body">Resetuješ celý postup, ale získáš <strong style="color:var(--purple)" id="modal-seeds">0</strong> Semínek moudrosti.<br><br>Každé semínko trvale zvýší výdělky o <strong style="color:var(--purple)">+10%</strong>.</div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closePrestige()">Zrušit</button>
+      <button class="modal-confirm" onclick="doPrestige()">Potvrdit 🌿</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="toasts"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+const BUSINESSES = [
+  { id:0, name:'Jahodová zahrádka', emoji:'🍓', color:'#f85149', bg:'rgba(248,81,73,0.15)',
+    baseCost:4, baseIncome:1.0, timer:1.5, unlockCost:0,
+    milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:3,label:'×3'},{at:50,mult:2,label:'×2'},{at:100,mult:5,label:'×5'},{at:200,mult:2,label:'×2'},{at:300,mult:10,label:'×10'},{at:500,mult:2,label:'×2'}]},
+  { id:1, name:'Mrkvové pole', emoji:'🥕', color:'#f0883e', bg:'rgba(240,136,62,0.15)',
+    baseCost:60, baseIncome:8, timer:3, unlockCost:0,
+    milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:2,label:'×2'},{at:50,mult:3,label:'×3'},{at:100,mult:2,label:'×2'},{at:200,mult:5,label:'×5'},{at:400,mult:2,label:'×2'}]},
+  { id:2, name:'Rajčatový skleník', emoji:'🍅', color:'#f85149', bg:'rgba(220,38,38,0.12)',
+    baseCost:720, baseIncome:60, timer:6, unlockCost:200,
+    milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:3,label:'×3'},{at:75,mult:2,label:'×2'},{at:100,mult:2,label:'×2'},{at:200,mult:5,label:'×5'},{at:300,mult:3,label:'×3'}]},
+  { id:3, name:'Borůvkový háj', emoji:'🫐', color:'#a371f7', bg:'rgba(163,113,247,0.15)',
+    baseCost:8640, baseIncome:500, timer:12, unlockCost:2000,
+    milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:2,label:'×2'},{at:50,mult:5,label:'×5'},{at:100,mult:2,label:'×2'},{at:250,mult:3,label:'×3'},{at:500,mult:10,label:'×10'}]},
+  { id:4, name:'Brokolicová plantáž', emoji:'🥦', color:'#3fb950', bg:'rgba(63,185,80,0.15)',
+    baseCost:103680, baseIncome:4000, timer:24, unlockCost:20000,
+    milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:2,label:'×2'},{at:50,mult:3,label:'×3'},{at:100,mult:5,label:'×5'},{at:200,mult:2,label:'×2'},{at:400,mult:5,label:'×5'}]},
+  { id:5, name:'Vinohrad hroznů', emoji:'🍇', color:'#8957e5', bg:'rgba(137,87,229,0.15)',
+    baseCost:1244160, baseIncome:30000, timer:48, unlockCost:200000,
+    milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:3,label:'×3'},{at:50,mult:2,label:'×2'},{at:100,mult:5,label:'×5'},{at:200,mult:3,label:'×3'},{at:300,mult:2,label:'×2'}]},
+  { id:6, name:'Melounová farma', emoji:'🍉', color:'#39d353', bg:'rgba(57,211,83,0.12)',
+    baseCost:14929920, baseIncome:200000, timer:96, unlockCost:2000000,
+    milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:2,label:'×2'},{at:50,mult:3,label:'×3'},{at:100,mult:10,label:'×10'},{at:200,mult:2,label:'×2'},{at:350,mult:5,label:'×5'}]},
+  { id:7, name:'Avokádový sad', emoji:'🥑', color:'#7ee787', bg:'rgba(126,231,135,0.12)',
+    baseCost:179159040, baseIncome:1500000, timer:180, unlockCost:25000000,
+    milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:5,label:'×5'},{at:50,mult:2,label:'×2'},{at:100,mult:3,label:'×3'},{at:200,mult:5,label:'×5'},{at:400,mult:2,label:'×2'}]},
+  { id:8, name:'Ananasová plantáž', emoji:'🍍', color:'#e3b341', bg:'rgba(227,179,65,0.12)',
+    baseCost:2149908480, baseIncome:12000000, timer:360, unlockCost:300000000,
+    milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:3,label:'×3'},{at:50,mult:5,label:'×5'},{at:100,mult:2,label:'×2'},{at:200,mult:10,label:'×10'},{at:300,mult:3,label:'×3'}]},
+  { id:9, name:'Chilli impérium', emoji:'🌶️', color:'#f85149', bg:'rgba(248,81,73,0.12)',
+    baseCost:25798901760, baseIncome:100000000, timer:600, unlockCost:3000000000,
+    milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:5,label:'×5'},{at:50,mult:3,label:'×3'},{at:100,mult:5,label:'×5'},{at:200,mult:10,label:'×10'},{at:500,mult:25,label:'×25'}]},
+];
+
+const MANAGERS = [
+  {id:0,bizId:0,name:'Jana Jahodová',emoji:'👩‍🌾',desc:'Automatizuje jahodník',price:25},
+  {id:1,bizId:1,name:'Karel Mrkvák',emoji:'👨‍🌾',desc:'Automatizuje mrkev',price:500},
+  {id:2,bizId:2,name:'Tomáš Rajčeta',emoji:'🧑‍🌾',desc:'Automatizuje rajčata',price:5000},
+  {id:3,bizId:3,name:'Blanka Borůvka',emoji:'👩‍💼',desc:'Automatizuje borůvky',price:50000},
+  {id:4,bizId:4,name:'Bořek Brokolice',emoji:'🧑‍💼',desc:'Automatizuje brokolici',price:500000},
+  {id:5,bizId:5,name:'Viktor Vinohrad',emoji:'👔',desc:'Automatizuje hrozny',price:5000000},
+  {id:6,bizId:6,name:'Markéta Melounová',emoji:'👗',desc:'Automatizuje melouny',price:50000000},
+  {id:7,bizId:7,name:'Avi Avokádo',emoji:'🤵',desc:'Automatizuje avokádo',price:500000000},
+  {id:8,bizId:8,name:'Anežka Ananas',emoji:'👑',desc:'Automatizuje ananas',price:5000000000},
+  {id:9,bizId:9,name:'Chilli Khan',emoji:'🎩',desc:'Automatizuje chilli',price:50000000000},
+];
+
+const UPGRADES = [
+  // ── JAHODY (3 upgrady)
+  {id:0, bizId:0,name:'Lepší půda',       emoji:'🍓',desc:'Výnosnější půda pro jahody ×2',       price:100,       mult:2},
+  {id:1, bizId:0,name:'Závlahový systém', emoji:'💧',desc:'Automatická závlaha jahod ×3',         price:8000,      mult:3},
+  {id:2, bizId:0,name:'Skleníkové jahody',emoji:'🏠',desc:'Celoroční pěstování jahod ×5',         price:500000,    mult:5},
+  // ── MRKEV (3 upgrady)
+  {id:3, bizId:1,name:'Hnojivo premium',  emoji:'🥕',desc:'Rychlejší růst mrkve ×2',              price:1000,      mult:2},
+  {id:4, bizId:1,name:'Kombajn na mrkev', emoji:'🚜',desc:'Efektivnější sklizeň mrkve ×3',        price:80000,     mult:3},
+  {id:5, bizId:1,name:'GMO mrkev',        emoji:'🧬',desc:'Šlechtěná odrůda mrkve ×5',            price:5000000,   mult:5},
+  // ── RAJČATA (3 upgrady)
+  {id:6, bizId:2,name:'Solární skleník',  emoji:'🍅',desc:'Více světla pro rajčata ×2',           price:10000,     mult:2},
+  {id:7, bizId:2,name:'Hydroponika',      emoji:'🌊',desc:'Pěstování ve vodě ×3',                 price:800000,    mult:3},
+  {id:8, bizId:2,name:'Rajčatová věž',    emoji:'🏗️',desc:'Vícepatrové pěstování ×5',             price:50000000,  mult:5},
+  // ── BORŮVKY (3 upgrady)
+  {id:9, bizId:3,name:'Kyselá půda',      emoji:'🫐',desc:'Ideální pH pro borůvky ×2',            price:100000,    mult:2},
+  {id:10,bizId:3,name:'Mykorrhiza',       emoji:'🍄',desc:'Houbová symbióza pro borůvky ×3',      price:8000000,   mult:3},
+  {id:11,bizId:3,name:'Borůvkový sad+',   emoji:'🌲',desc:'Rozšíření háje ×5',                    price:500000000, mult:5},
+  // ── BROKOLICE (3 upgrady)
+  {id:12,bizId:4,name:'Bio certifikát',   emoji:'🥦',desc:'Prémiové bio brokolice ×2',            price:1000000,   mult:2},
+  {id:13,bizId:4,name:'Chladírenský vůz', emoji:'🚛',desc:'Rychlejší transport ×3',               price:80000000,  mult:3},
+  {id:14,bizId:4,name:'Export do EU',     emoji:'🇪🇺',desc:'Evropský trh pro brokolici ×5',       price:5e9,       mult:5},
+  // ── HROZNY (3 upgrady)
+  {id:15,bizId:5,name:'Starý vinohrad',   emoji:'🍇',desc:'Letité révy dávají víc ×2',            price:10000000,  mult:2},
+  {id:16,bizId:5,name:'Vinný sklep',      emoji:'🏚️',desc:'Vlastní zrání vína ×3',               price:800000000, mult:3},
+  {id:17,bizId:5,name:'Château label',    emoji:'🍷',desc:'Luxusní značka pro víno ×5',           price:5e10,      mult:5},
+  // ── MELOUN (3 upgrady)
+  {id:18,bizId:6,name:'Včelí opylovači',  emoji:'🐝',desc:'Lepší opylení melounů ×2',             price:100000000, mult:2},
+  {id:19,bizId:6,name:'Prémiové semínko', emoji:'🌱',desc:'Japonské odrůdy ×3',                   price:8e9,       mult:3},
+  {id:20,bizId:6,name:'Megameloun',       emoji:'🍉',desc:'Rekordní melouny ×5',                  price:5e11,      mult:5},
+  // ── AVOKÁDO (3 upgrady)
+  {id:21,bizId:7,name:'Kalifornský sad',  emoji:'🥑',desc:'Klimatické podmínky ×2',               price:1e9,       mult:2},
+  {id:22,bizId:7,name:'Influencer deal',  emoji:'📱',desc:'Virální avokádo na TikToku ×3',        price:8e10,      mult:3},
+  {id:23,bizId:7,name:'Avokádo futures',  emoji:'📈',desc:'Komoditní trh s avokádem ×5',          price:5e12,      mult:5},
+  // ── ANANAS (3 upgrady)
+  {id:24,bizId:8,name:'Tropický skleník', emoji:'🍍',desc:'Simulace tropů ×2',                    price:1e10,      mult:2},
+  {id:25,bizId:8,name:'Letecký export',   emoji:'✈️',desc:'Přímý export do světa ×3',             price:8e11,      mult:3},
+  {id:26,bizId:8,name:'Ananas imperium',  emoji:'👑',desc:'Monopol na ananas ×5',                 price:5e13,      mult:5},
+  // ── CHILLI (3 upgrady)
+  {id:27,bizId:9,name:'Ghost pepper',     emoji:'🌶️',desc:'Nejpálivější odrůda ×2',               price:1e11,      mult:2},
+  {id:28,bizId:9,name:'Omáčky & export',  emoji:'🔥',desc:'Vlastní značka omáček ×3',             price:8e12,      mult:3},
+  {id:29,bizId:9,name:'Chilli světovláda',emoji:'🌍',desc:'Globální dominance chilli ×5',         price:5e14,      mult:5},
+];
+
+const COST_GROWTH = 1.15;
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+function normalizeBuyMode(m) {
+  if (m==='max' || m===0) return 'max';
+  if (m==='milestone') return 'milestone';
+  return '1';
+}
+
+let state = loadState() || {
+  money:0, totalEarned:0, buyMode:'1',
+  businesses: BUSINESSES.map(b=>({id:b.id,count:b.id===0?1:0,progress:0,running:false,managerHired:false,upgradeMult:1})),
+  managers:{}, upgrades:{}, prestigeCount:0, totalSeeds:0,
+};
+
+let buyMode = normalizeBuyMode(state.buyMode);
+state.buyMode = buyMode;
+let prestigeSeeds = 0;
+const progressTimers = {};
+
+// ═══════════════════════════════════════════════
+// FORMULAS
+// ═══════════════════════════════════════════════
+const getBizState = id => state.businesses[id];
+const getBizDef   = id => BUSINESSES[id];
+
+function calcCost(bizId, amount) {
+  const def = getBizDef(bizId), owned = getBizState(bizId).count;
+  if (amount===1) return def.baseCost * Math.pow(COST_GROWTH, owned);
+  return def.baseCost * Math.pow(COST_GROWTH, owned) * (Math.pow(COST_GROWTH,amount)-1) / (COST_GROWTH-1);
+}
+
+function calcMaxBuy(bizId) {
+  const def = getBizDef(bizId), owned = getBizState(bizId).count;
+  let lo=1, hi=2000, best=0;
+  while (lo<=hi) {
+    const mid = Math.floor((lo+hi)/2);
+    const cost = def.baseCost * Math.pow(COST_GROWTH,owned) * (Math.pow(COST_GROWTH,mid)-1) / (COST_GROWTH-1);
+    if (cost<=state.money) { best=mid; lo=mid+1; } else hi=mid-1;
+  }
+  return best;
+}
+
+function getNextMilestone(bizId) {
+  const count = getBizState(bizId).count;
+  return getBizDef(bizId).milestones.find(m=>count<m.at) || null;
+}
+
+function calcMilestoneBuy(bizId) {
+  const next = getNextMilestone(bizId);
+  if (!next) return Math.max(1, calcMaxBuy(bizId));
+  const needed = next.at - getBizState(bizId).count;
+  return needed > 0 ? needed : 1;
+}
+
+function getBuyAmount(bizId) {
+  if (buyMode==='max')       return Math.max(1, calcMaxBuy(bizId));
+  if (buyMode==='milestone') return calcMilestoneBuy(bizId);
+  return 1;
+}
+
+function getMilestoneMult(bizId) {
+  const count = getBizState(bizId).count;
+  let mult = 1;
+  for (const m of getBizDef(bizId).milestones) if (count>=m.at) mult*=m.mult;
+  return mult;
+}
+
+function getIncome(bizId) {
+  const def = getBizDef(bizId), bs = getBizState(bizId);
+  return def.baseIncome * bs.count * getMilestoneMult(bizId) * bs.upgradeMult * (1 + state.totalSeeds*0.1);
+}
+
+function getPerSec() {
+  let total = 0;
+  for (const b of BUSINESSES) {
+    const bs = getBizState(b.id);
+    if (bs.count>0 && bs.managerHired) total += getIncome(b.id)/b.timer;
+  }
+  return total;
+}
+
+function isUnlocked(bizId) { return bizId===0 || state.totalEarned>=getBizDef(bizId).unlockCost; }
+
+function calcPrestigeSeeds() {
+  return Math.max(0, Math.floor(Math.sqrt(state.totalEarned/1000000)));
+}
+
+// ═══════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════
+function buyBusiness(bizId) {
+  if (!isUnlocked(bizId)) return;
+  const amount = getBuyAmount(bizId);
+  if (amount<1) { notify('Nemáš dost peněz!'); return; }
+  const cost = calcCost(bizId, amount);
+  if (state.money<cost) { notify('Nemáš dost peněz!'); return; }
+  const bs = getBizState(bizId);
+  const prev = bs.count;
+  state.money -= cost;
+  bs.count += amount;
+  const def = getBizDef(bizId);
+  for (const m of def.milestones) {
+    if (prev<m.at && bs.count>=m.at) notify(`🎉 Milník! ${def.emoji} ${def.name} ${m.at} ks → bonus ${m.label}!`, 'gold');
+  }
+  render(); saveState();
+}
+
+function buyManager(managerId) {
+  const mgr = MANAGERS[managerId];
+  if (state.managers[managerId]) return;
+  if (state.money<mgr.price) { notify('Nemáš dost peněz!'); return; }
+  state.money -= mgr.price;
+  state.managers[managerId] = true;
+  state.businesses[mgr.bizId].managerHired = true;
+  notify(`👔 ${mgr.name} nastoupil/a!`, 'gold');
+  render(); saveState();
+  const bs = getBizState(mgr.bizId);
+  if (bs.count>0 && !bs.running) startProgress(mgr.bizId);
+}
+
+function buyUpgrade(upgradeId) {
+  const upg = UPGRADES[upgradeId];
+  if (state.upgrades[upgradeId]) return;
+  if (state.money<upg.price) { notify('Nemáš dost peněz!'); return; }
+  state.money -= upg.price;
+  state.upgrades[upgradeId] = true;
+  state.businesses[upg.bizId].upgradeMult *= upg.mult;
+  notify(`⚡ ${upg.name} zakoupeno!`, 'gold');
+  render(); saveState();
+}
+
+// ═══════════════════════════════════════════════
+// PROGRESS TIMERS
+// ═══════════════════════════════════════════════
+function startProgress(bizId) {
+  const bs = getBizState(bizId), def = getBizDef(bizId);
+  if (bs.running || bs.count===0) return;
+  bs.running=true; bs.progress=0;
+  clearInterval(progressTimers[bizId]);
+  const startTime = Date.now(), duration = def.timer*1000;
+  progressTimers[bizId] = setInterval(()=>{
+    bs.progress = Math.min((Date.now()-startTime)/duration, 1);
+    updateProgressBar(bizId);
+    if (bs.progress>=1) {
+      clearInterval(progressTimers[bizId]);
+      delete progressTimers[bizId];
+      bs.running=false; bs.progress=0;
+      const income = getIncome(bizId);
+      state.money+=income; state.totalEarned+=income;
+      showFloatMoney(bizId, income);
+      if (bs.managerHired) startProgress(bizId);
+      else { updateProgressBar(bizId); updateHarvestBtn(bizId); }
+    }
+  }, 50);
+  updateHarvestBtn(bizId);
+}
+
+function updateProgressBar(bizId) {
+  const bar  = document.getElementById(`pb-${bizId}`);
+  const lbl  = document.getElementById(`pl-${bizId}`);
+  if (!bar) return;
+  const bs = getBizState(bizId), def = getBizDef(bizId);
+  bar.style.width = (bs.progress*100)+'%';
+  if (lbl) {
+    if (bs.running) lbl.textContent = ((1-bs.progress)*def.timer).toFixed(1)+'s';
+    else lbl.textContent = bs.count>0 ? 'Připraveno!' : 'Kup první!';
+  }
+}
+
+function updateHarvestBtn(bizId) {
+  const btn = document.getElementById(`hb-${bizId}`);
+  if (!btn) return;
+  const bs = getBizState(bizId);
+  if (bs.managerHired) {
+    btn.textContent='🤖'; btn.className='fc-harvest-btn auto'; btn.disabled=true;
+  } else if (bs.running) {
+    btn.textContent='⏳'; btn.className='fc-harvest-btn'; btn.disabled=true;
+  } else {
+    btn.textContent='▶'; btn.className='fc-harvest-btn ready'; btn.disabled=false;
+  }
+}
+
+function showFloatMoney(bizId, amount) {
+  const card = document.getElementById(`fc-${bizId}`);
+  if (!card) return;
+  const rect = card.getBoundingClientRect();
+  // Float money label
+  const el = document.createElement('div');
+  el.className='float-money';
+  el.textContent='+'+fmt(amount);
+  el.style.left=(rect.left+rect.width/2-30)+'px';
+  el.style.top=(rect.top+16)+'px';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1100);
+  // Card harvest flash
+  card.classList.add('harvest-flash');
+  setTimeout(()=>card.classList.remove('harvest-flash'), 380);
+}
+
+// ═══════════════════════════════════════════════
+// FORMAT
+// ═══════════════════════════════════════════════
+function fmt(n) {
+  if (n<1e3)  return n.toFixed(0)+' Kč';
+  if (n<1e6)  return (n/1e3).toFixed(1)+' tis';
+  if (n<1e9)  return (n/1e6).toFixed(2)+' mil';
+  if (n<1e12) return (n/1e9).toFixed(2)+' mld';
+  if (n<1e15) return (n/1e12).toFixed(2)+' bil';
+  return (n/1e15).toFixed(2)+' kvad';
+}
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+function render() {
+  renderFarms();
+  renderManagers();
+  renderUpgrades();
+  syncTimers();
+}
+
+function renderFarms() {
+  const list = document.getElementById('farmList');
+  list.innerHTML = '';
+  for (const def of BUSINESSES) {
+    const bs = getBizState(def.id);
+    const unlocked = isUnlocked(def.id);
+    const locked = !unlocked;
+    const amount = getBuyAmount(def.id);
+    const cost = locked ? def.unlockCost : calcCost(def.id, amount);
+    const canAfford = !locked && state.money>=cost;
+    const income = getIncome(def.id);
+
+    // milestone badges
+    const msBadges = def.milestones.map(m=>{
+      const done = bs.count>=m.at;
+      return `<span class="ms-badge${done?' done':''}">${m.label}</span>`;
+    }).join('');
+
+    // milestone progress bar
+    let msProgressHTML = '';
+    const nextMs = getNextMilestone(def.id);
+    if (nextMs && bs.count>0) {
+      const prevMs = def.milestones.slice().reverse().find(m=>bs.count>=m.at);
+      const from = prevMs ? prevMs.at : 0;
+      const pct = Math.min(100, ((bs.count-from)/(nextMs.at-from)*100)).toFixed(1);
+      msProgressHTML = `<div class="fc-ms-progress"><div class="fc-ms-bar" style="width:${pct}%;background:${def.color}"></div><span class="fc-ms-label">${bs.count} / ${nextMs.at} → ${nextMs.label}</span></div>`;
+    } else if (!nextMs && bs.count>0) {
+      msProgressHTML = `<div class="fc-ms-progress" style="background:rgba(63,185,80,0.1)"><span class="fc-ms-label" style="color:var(--green)">✅ Všechny milníky</span></div>`;
+    }
+
+    // buy btn label
+    let buyLabel = locked ? `🔒 ${fmt(def.unlockCost)}` : `Koupit ×${amount} · ${fmt(cost)}`;
+
+    const card = document.createElement('div');
+    card.id = `fc-${def.id}`;
+    card.className = `farm-card${locked?' locked':''}${canAfford&&!locked?' affordable':''}`;
+
+    card.style.setProperty('--card-color', def.color);
+    card.innerHTML = `
+      <div class="fc-top">
+        <div class="fc-icon" style="background:${def.bg}">
+          ${def.emoji}
+          ${bs.count>0?`<span class="badge">${bs.count}</span>`:''}
+        </div>
+        <div class="fc-meta">
+          <div class="fc-name">${def.name}</div>
+          <div class="fc-stats">
+            <span class="hi">💰 ${fmt(income)}</span>
+            <span class="dot">·</span><span>⏱ ${def.timer}s</span>
+            <span class="dot">·</span><span class="hi2">×${getMilestoneMult(def.id)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="fc-milestones">${msBadges}</div>
+      ${msProgressHTML}
+      ${locked
+        ? `<div class="fc-lock-info">Potřeba celkem: ${fmt(def.unlockCost)}</div>`
+        : `<div class="fc-progress" id="fp-${def.id}">
+             <div class="fc-progress-bar" id="pb-${def.id}" style="width:0%;background:${def.color}"></div>
+             <div class="fc-progress-label" id="pl-${def.id}">${bs.count>0?'Připraveno!':'Kup první!'}</div>
+           </div>`
+      }
+      <div class="fc-actions">
+        ${!locked && bs.count>0
+          ? `<button class="fc-harvest-btn" id="hb-${def.id}">▶</button>`
+          : `<div style="width:52px"></div>`
+        }
+        <button class="fc-buy-btn${locked?' locked-btn':''}" id="bb-${def.id}">${buyLabel}</button>
+      </div>
+    `;
+
+    list.appendChild(card);
+
+    // wire events
+    document.getElementById(`bb-${def.id}`).addEventListener('click', ()=>buyBusiness(def.id));
+    if (!locked) {
+      document.getElementById(`fp-${def.id}`)?.addEventListener('click', ()=>{
+        const b = getBizState(def.id);
+        if (b.count>0 && !b.running && !b.managerHired) startProgress(def.id);
+      });
+    }
+    if (!locked && bs.count>0) {
+      document.getElementById(`hb-${def.id}`)?.addEventListener('click', ()=>startProgress(def.id));
+      updateHarvestBtn(def.id);
+      updateProgressBar(def.id);
+    }
+  }
+}
+
+function renderManagers() {
+  const list = document.getElementById('managers-list');
+  list.innerHTML='';
+  for (const mgr of MANAGERS) {
+    const hired = !!state.managers[mgr.id];
+    const canAfford = state.money>=mgr.price;
+    const bizUnlocked = isUnlocked(mgr.bizId);
+    // Vždy zobraz všechny manažery - zamčené jen zašedlíme
+    const el = document.createElement('div');
+    el.id = `manager-card-${mgr.id}`;
+    el.className = `mgr-card${hired?' hired':''}${!hired&&!canAfford?' cant-afford':''}${!bizUnlocked&&!hired?' biz-locked':''}`;
+    el.innerHTML = `
+      <div class="mgr-emoji" style="${!bizUnlocked?'filter:grayscale(1);opacity:0.5':''}">${mgr.emoji}</div>
+      <div class="mgr-info">
+        <div class="mgr-name">${mgr.name}</div>
+        <div class="mgr-desc">${bizUnlocked ? mgr.desc : '🔒 Odemkni farmu'}</div>
+      </div>
+      <div class="mgr-right">
+        ${hired
+          ? '<span class="mgr-hired-badge">✓ Najatý</span>'
+          : `<div class="mgr-price" style="${!bizUnlocked?'color:var(--text3)':''}">${fmt(mgr.price)}</div>`}
+      </div>`;
+    if (!hired && bizUnlocked) el.addEventListener('click', ()=>buyManager(mgr.id));
+    list.appendChild(el);
+  }
+}
+
+function renderUpgrades() {
+  const list = document.getElementById('upgrades-list');
+  list.innerHTML='';
+  for (const upg of UPGRADES) {
+    const bought = !!state.upgrades[upg.id];
+    const canAfford = state.money>=upg.price;
+    const bizUnlocked = isUnlocked(upg.bizId);
+    const el = document.createElement('div');
+    el.id = `upgrade-card-${upg.id}`;
+    el.className = `upg-card${bought?' bought':''}${!bought&&!canAfford?' cant-afford':''}${!bizUnlocked&&!bought?' biz-locked':''}`;
+    el.innerHTML = `
+      <div class="upg-emoji" style="${!bizUnlocked&&!bought?'filter:grayscale(1);opacity:0.4':''}">${upg.emoji}</div>
+      <div class="upg-info">
+        <div class="upg-name">${upg.name}</div>
+        <div class="upg-desc">${bizUnlocked ? upg.desc : '🔒 Odemkni farmu'}</div>
+      </div>
+      ${bought ? '<span class="upg-done">✓</span>' : `<span class="upg-price" style="${!bizUnlocked?'color:var(--text3)':''}">${fmt(upg.price)}</span>`}`;
+    if (!bought && bizUnlocked) el.addEventListener('click', ()=>buyUpgrade(upg.id));
+    list.appendChild(el);
+  }
+}
+
+function syncTimers() {
+  for (const def of BUSINESSES) {
+    const bs = getBizState(def.id);
+    if (!isUnlocked(def.id) && bs.count===0) continue;
+    if (bs.managerHired && bs.count>0) {
+      if (!progressTimers[def.id] && !bs.running) startProgress(def.id);
+      if (bs.running && !progressTimers[def.id]) { bs.running=false; bs.progress=0; startProgress(def.id); }
+    }
+    updateHarvestBtn(def.id);
+    updateProgressBar(def.id);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// LIVE UPDATE (game loop)
+// ═══════════════════════════════════════════════
+function updateMoneyDisplay() {
+  document.getElementById('moneyDisplay').textContent = fmt(state.money);
+  document.getElementById('perSecDisplay').textContent = fmt(getPerSec())+'/s';
+}
+
+function updateAffordability() {
+  for (const def of BUSINESSES) {
+    const btn = document.getElementById(`bb-${def.id}`);
+    if (!btn) continue;
+    const locked = !isUnlocked(def.id);
+    const amount = getBuyAmount(def.id);
+    const cost = locked ? def.unlockCost : calcCost(def.id, amount);
+    const canAfford = !locked && state.money>=cost;
+    btn.disabled = !canAfford;
+    if (locked) {
+      btn.textContent = `🔒 ${fmt(def.unlockCost)}`;
+    } else if (amount < 1) {
+      btn.textContent = `Nedostatek peněz`;
+    } else {
+      btn.textContent = `Koupit ×${amount}  ${fmt(cost)}`;
+    }
+
+    const card = document.getElementById(`fc-${def.id}`);
+    if (card) {
+      card.classList.toggle('affordable', canAfford && !locked);
+    }
+  }
+  for (const mgr of MANAGERS) {
+    const card = document.getElementById(`manager-card-${mgr.id}`);
+    if (!card || state.managers[mgr.id]) continue;
+    if (!isUnlocked(mgr.bizId)) continue; // zamčené farmy nemeníme
+    card.classList.toggle('cant-afford', state.money<mgr.price);
+  }
+  for (const upg of UPGRADES) {
+    const card = document.getElementById(`upgrade-card-${upg.id}`);
+    if (!card || state.upgrades[upg.id]) continue;
+    card.classList.toggle('cant-afford', state.money<upg.price);
+  }
+}
+
+function updateStats() {
+  document.getElementById('st-total').textContent   = fmt(state.totalEarned);
+  document.getElementById('st-rate').textContent    = fmt(getPerSec());
+  document.getElementById('st-farms').textContent   = BUSINESSES.filter((_,i)=>isUnlocked(i)).length;
+  document.getElementById('st-mgr').textContent     = Object.keys(state.managers).length;
+  document.getElementById('st-seeds').textContent   = state.totalSeeds+' 🌿';
+  document.getElementById('st-prestige').textContent = state.prestigeCount;
+  const seeds = calcPrestigeSeeds();
+  document.getElementById('st-seeds-preview').textContent = `Získáš: ${seeds} 🌿`;
+  document.getElementById('st-prestige-mult').textContent = '×'+(1+state.totalSeeds*0.1).toFixed(1);
+}
+
+let lastTime = Date.now();
+let lastSaveTime = Date.now();
+function gameLoop() {
+  const now = Date.now();
+  lastTime = now;
+  updateMoneyDisplay();
+  updateAffordability();
+  updateStats();
+  if (now - lastSaveTime > 10000) { saveState(); lastSaveTime = now; }
+  requestAnimationFrame(gameLoop);
+}
+
+// ═══════════════════════════════════════════════
+// PRESTIGE
+// ═══════════════════════════════════════════════
+function openPrestige() {
+  prestigeSeeds = calcPrestigeSeeds();
+  document.getElementById('modal-seeds').textContent = prestigeSeeds+' 🌿';
+  document.getElementById('prestige-modal').classList.add('visible');
+}
+function closePrestige() {
+  document.getElementById('prestige-modal').classList.remove('visible');
+}
+function doPrestige() {
+  if (prestigeSeeds<1) { notify('Vydělejte 1 mil. Kč pro první prestiž!'); closePrestige(); return; }
+  state.totalSeeds += prestigeSeeds;
+  state.prestigeCount++;
+  for (const id in progressTimers) clearInterval(progressTimers[id]);
+  Object.keys(progressTimers).forEach(k=>delete progressTimers[k]);
+  state.money=0; state.totalEarned=0; state.managers={}; state.upgrades={};
+  state.businesses = BUSINESSES.map(b=>({id:b.id,count:b.id===0?1:0,progress:0,running:false,managerHired:false,upgradeMult:1}));
+  closePrestige();
+  notify(`✨ Prestiž! +${prestigeSeeds} 🌿 Nový bonus: ×${(1+state.totalSeeds*0.1).toFixed(1)}`, 'purple');
+  render(); saveState();
+}
+
+// ═══════════════════════════════════════════════
+// SHEETS & NAV
+// ═══════════════════════════════════════════════
+function openSheet(id) {
+  document.getElementById(id).classList.add('open');
+  document.getElementById('overlay-'+id).classList.add('visible');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navMap = {'managers-sheet':'nav-managers','upgrades-sheet':'nav-upgrades','stats-sheet':'nav-stats'};
+  if (navMap[id]) document.getElementById(navMap[id]).classList.add('active');
+}
+function closeSheet(id) {
+  document.getElementById(id).classList.remove('open');
+  document.getElementById('overlay-'+id).classList.remove('visible');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-farms').classList.add('active');
+}
+function showView(v) {
+  ['managers-sheet','upgrades-sheet','stats-sheet'].forEach(s=>closeSheet(s));
+}
+
+function setBuyMode(mode, btn) {
+  buyMode = mode; state.buyMode = mode;
+  document.querySelectorAll('.bm-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+// ═══════════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════════
+function notify(msg, type='') {
+  const el = document.createElement('div');
+  el.className = 'toast'+(type?' '+type:'');
+  el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(), 3100);
+}
+
+// ═══════════════════════════════════════════════
+// SAVE / LOAD
+// ═══════════════════════════════════════════════
+function saveState() {
+  state.lastSaved = Date.now();
+  localStorage.setItem('farmtycoon_v3', JSON.stringify(state));
+}
+function loadState() {
+  try { const s=localStorage.getItem('farmtycoon_v3'); return s?JSON.parse(s):null; }
+  catch { return null; }
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+function init() {
+  // Offline earnings
+  if (state.lastSaved) {
+    const offlineSec = Math.min((Date.now()-state.lastSaved)/1000, 8*3600);
+    if (offlineSec>5) {
+      let earned=0;
+      for (const b of BUSINESSES) {
+        const bs=getBizState(b.id);
+        if (bs.managerHired && bs.count>0) earned += Math.floor(offlineSec/b.timer)*getIncome(b.id);
+      }
+      if (earned>0) {
+        state.money+=earned; state.totalEarned+=earned;
+        const mins=Math.floor(offlineSec/60), hrs=Math.floor(mins/60);
+        const t=hrs>0?`${hrs} hod ${mins%60} min`:`${mins} min`;
+        window._offlineMsg = `💤 Offline výdělek za ${t}: +${fmt(earned)}`;
+      }
+    }
+  }
+
+  // Restore buy mode button
+  const bmBtn = document.getElementById('buymode-'+buyMode) || document.getElementById('buymode-1');
+  document.querySelectorAll('.bm-btn').forEach(b=>b.classList.remove('active'));
+  if (bmBtn) bmBtn.classList.add('active');
+
+  render();
+  gameLoop();
+
+  // Start auto managers
+  for (const b of BUSINESSES) {
+    const bs=getBizState(b.id);
+    if (bs.managerHired && bs.count>0) setTimeout(()=>startProgress(b.id), 100+b.id*60);
+  }
+
+  if (window._offlineMsg) {
+    setTimeout(()=>{ notify(window._offlineMsg,'gold'); delete window._offlineMsg; }, 600);
+  } else {
+    setTimeout(()=>notify('🌱 Vítej na farmě!'), 400);
+  }
+}
+
+init();
+
+// Detekce PWA módu (spuštěno z plochy, ne v Safari)
+if (window.navigator.standalone === true) {
+  document.documentElement.classList.add('pwa-mode');
+}
+</script>
+</body>
+</html>

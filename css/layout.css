@@ -1,0 +1,152 @@
+/* ─── TOP BAR ─────────────────────────────── */
+#topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 9px;
+  background: rgba(0,0,0,.98);
+  border-bottom: 1px solid var(--bd);
+  position: relative;
+}
+.pwa-mode #topbar {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+}
+#topbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--em-glow) 40%, var(--am-glow) 70%, transparent 100%);
+}
+
+.topbar-logo {
+  font-family: var(--fd);
+  font-size: 1.2rem;
+  color: var(--em);
+  white-space: nowrap;
+  text-shadow: 0 0 18px var(--em-glow);
+  letter-spacing: -.3px;
+}
+
+.topbar-money {
+  flex: 1;
+  text-align: center;
+}
+.topbar-money-amount {
+  font-family: var(--fd);
+  font-size: 1.3rem;
+  color: var(--am);
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 0 18px var(--am-glow);
+}
+.topbar-money-rate {
+  font-size: .65rem;
+  color: var(--t2);
+  font-weight: 500;
+  margin-top: 1px;
+  letter-spacing: .2px;
+}
+
+.topbar-right { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+
+.prestige-pill {
+  background: var(--pu-dim);
+  border: 1px solid rgba(167,139,250,.28);
+  border-radius: 50px;
+  padding: 7px 12px;
+  color: var(--pu);
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: .71rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .18s;
+  -webkit-appearance: none;
+  position: relative; /* pro notif-dot */
+}
+.prestige-pill:active { opacity: .7; transform: scale(.95); }
+
+/* ─── BUY MODE BAR ────────────────────────── */
+#buy-mode-row {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(0,0,0,.96);
+  border-bottom: 1px solid var(--bd);
+}
+.bm-btn {
+  flex: 1;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: var(--r1);
+  padding: 6px 4px;
+  color: var(--t2);
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: .75rem;
+  cursor: pointer;
+  transition: all .2s;
+  -webkit-appearance: none;
+  white-space: nowrap;
+}
+.bm-btn.active {
+  background: var(--em-dim);
+  border-color: rgba(0,229,160,.35);
+  color: var(--em);
+  box-shadow: 0 0 12px var(--em-glow);
+}
+.bm-btn:active:not(.active) { opacity: .55; }
+
+/* ─── SCROLL & FARM LIST ──────────────────── */
+#scroll-area { padding: 0 0 80px; }
+#farmList { padding: 8px 10px 0; }
+
+/* ─── BOTTOM NAV ──────────────────────────── */
+#bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  padding-bottom: env(safe-area-inset-bottom,0px);
+  background: rgba(0,0,0,.99);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid var(--bd);
+  display: flex;
+  z-index: 100;
+  box-shadow: 0 -6px 30px rgba(0,0,0,.5);
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--t3);
+  font-family: var(--f);
+  gap: 3px;
+  transition: color .2s;
+  position: relative;
+}
+.nav-item::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 25%; right: 25%;
+  height: 2px;
+  background: var(--em);
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 0 8px var(--em-glow);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.nav-item.active { color: var(--em); }
+.nav-item.active::after { opacity: 1; }
+.nav-item:active { opacity: .5; }
+.nav-icon  { font-size: 1.2rem; line-height: 1; position: relative; display: inline-block; }
+.nav-label { font-size: .57rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; }

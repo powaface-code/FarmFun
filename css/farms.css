@@ -1,0 +1,266 @@
+/* ─── FARM CARD ───────────────────────────── */
+.farm-card {
+  background: var(--s1);
+  border: 1px solid var(--bd);
+  border-radius: var(--r2);
+  margin-bottom: 6px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color .2s;
+}
+
+.farm-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
+}
+.farm-card::after {
+  content: '';
+  position: absolute;
+  top: 12px; left: 0; bottom: 12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--card-color, var(--em));
+  opacity: .6;
+}
+
+.farm-card.affordable {
+  border-color: rgba(0,229,160,.2);
+  box-shadow: 0 0 0 1px rgba(0,229,160,.06), 0 4px 24px rgba(0,229,160,.06);
+}
+.farm-card.locked {
+  opacity: .35;
+  filter: saturate(.3);
+}
+
+.fc-top {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px 0;
+  gap: 9px;
+}
+.fc-icon {
+  width: 42px; height: 42px;
+  border-radius: var(--r1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  position: relative;
+  border: 1px solid var(--bd2);
+}
+.fc-icon .badge {
+  position: absolute;
+  bottom: -4px; right: -5px;
+  background: var(--re);
+  color: #fff;
+  font-size: .56rem;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 20px;
+  border: 2px solid var(--s1);
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
+.fc-meta { flex: 1; min-width: 0; }
+.fc-name {
+  font-size: .84rem;
+  font-weight: 700;
+  color: var(--t1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -.1px;
+}
+.fc-stats {
+  font-size: .66rem;
+  color: var(--t2);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.fc-stats .hi  { color: var(--am); font-weight: 700; }
+.fc-stats .hi2 { color: var(--em); font-weight: 700; }
+.fc-stats .dot { color: var(--t3); }
+
+/* Milestone badges */
+.fc-milestones {
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+  margin: 4px 12px 0;
+}
+.ms-badge {
+  font-size: .52rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 20px;
+  background: var(--s3);
+  color: var(--t3);
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+  letter-spacing: .2px;
+  transition: all .35s;
+}
+.ms-badge.done {
+  background: var(--am-dim);
+  color: var(--am);
+  border-color: rgba(245,200,66,.22);
+  text-shadow: 0 0 8px var(--am-glow);
+}
+
+/* Milestone progress */
+.fc-ms-progress {
+  margin: 4px 12px 0;
+  height: 10px;
+  background: var(--s3);
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--bd);
+}
+.fc-ms-bar {
+  height: 100%;
+  border-radius: 50px;
+  opacity: .7;
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+}
+.fc-ms-label {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .54rem; font-weight: 800;
+  color: rgba(255,255,255,.8);
+  text-shadow: 0 1px 3px rgba(0,0,0,.8);
+  letter-spacing: .3px;
+}
+
+/* Harvest progress */
+.fc-progress {
+  margin: 5px 12px 0;
+  height: 20px;
+  background: var(--s3);
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid var(--bd);
+}
+.fc-progress-bar {
+  height: 100%;
+  border-radius: 50px;
+  transition: width .07s linear;
+  position: relative;
+}
+.fc-progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; right: 0; bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.15) 50%, transparent 100%);
+  animation: shimmer 1.8s infinite;
+}
+@keyframes shimmer {
+  0%   { left: -100%; }
+  100% { left: 200%; }
+}
+.fc-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 4px; left: 8px; right: 8px; height: 4px;
+  background: rgba(255,255,255,.18);
+  border-radius: 10px;
+}
+.fc-progress-label {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .6rem; font-weight: 800;
+  color: rgba(255,255,255,.9);
+  text-shadow: 0 1px 3px rgba(0,0,0,.9);
+  letter-spacing: .2px;
+}
+
+/* Actions row */
+.fc-actions {
+  display: flex;
+  gap: 7px;
+  padding: 6px 12px 10px;
+  margin-top: 4px;
+}
+
+.fc-harvest-btn {
+  width: 44px; height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--r1);
+  border: 1px solid var(--bd);
+  background: var(--s3);
+  color: var(--t3);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .18s;
+  -webkit-appearance: none;
+}
+.fc-harvest-btn.ready {
+  background: var(--em-dim);
+  border-color: rgba(0,229,160,.35);
+  color: var(--em);
+  box-shadow: 0 0 14px var(--em-glow), inset 0 1px 0 rgba(0,229,160,.1);
+}
+.fc-harvest-btn.auto {
+  background: rgba(96,165,250,.08);
+  border-color: rgba(96,165,250,.3);
+  color: var(--bl);
+  font-size: .6rem;
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+.fc-harvest-btn:active:not(:disabled) { transform: scale(.88); }
+.fc-harvest-btn:disabled { opacity: .3; cursor: default; transform: none; }
+
+.fc-buy-btn {
+  flex: 1;
+  height: 38px;
+  border-radius: var(--r1);
+  border: 1px solid rgba(245,200,66,.2);
+  background: var(--am-dim);
+  color: var(--am);
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: .77rem;
+  cursor: pointer;
+  transition: all .18s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 12px;
+  -webkit-appearance: none;
+  letter-spacing: .05px;
+}
+.fc-buy-btn:active:not(:disabled) {
+  transform: scale(.97);
+  box-shadow: 0 0 18px var(--am-glow);
+}
+.fc-buy-btn:disabled { opacity: .25; cursor: default; }
+.fc-buy-btn.locked-btn {
+  background: var(--s3);
+  border-color: var(--bd);
+  color: var(--t3);
+}
+.fc-lock-info {
+  font-size: .62rem; color: var(--t3);
+  text-align: center;
+  padding: 3px 14px 10px;
+  letter-spacing: .2px;
+}
+
+/* ─── HARVEST FLASH ──────────────────────── */
+@keyframes harvestFlash {
+  0%   { box-shadow: 0 0 0 0 rgba(245,200,66,0); }
+  30%  { box-shadow: 0 0 0 6px rgba(245,200,66,.2), inset 0 0 20px rgba(245,200,66,.06); }
+  100% { box-shadow: 0 0 0 0 rgba(245,200,66,0); }
+}
+.harvest-flash { animation: harvestFlash .38s ease; }

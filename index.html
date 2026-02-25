@@ -679,6 +679,14 @@ body::before {
 .upg-desc  { font-size: .67rem; color: var(--t2); margin-top: 1px; }
 .upg-price { flex-shrink: 0; font-family: var(--fd); font-size: .85rem; font-weight: 700; color: var(--am); }
 .upg-done  { flex-shrink: 0; font-size: .68rem; font-weight: 700; color: var(--em); }
+.upg-section-header {
+  padding: 12px 14px 6px;
+  font-size: .68rem; font-weight: 700;
+  color: var(--em); letter-spacing: .8px;
+  text-transform: uppercase; opacity: .8;
+}
+.global-upg { border-color: rgba(0,255,179,.15); }
+.global-upg:not(.bought):not(.cant-afford) { background: rgba(0,255,179,.05); }
 
 /* ─── STATS SHEET ─────────────────────────── */
 .stat-grid {
@@ -1157,6 +1165,15 @@ const UPGRADES = [
 
 const COST_GROWTH = 1.15;
 
+// ─── GLOBÁLNÍ BOOSTERY ───────────────────────
+const GLOBAL_UPGRADES = [
+  {id:0, name:'Farmářská revoluce',  emoji:'🌱', desc:'Dvojnásobný příjem ze VŠECH farem',   price:50000},
+  {id:1, name:'Agrární technologie', emoji:'🚜', desc:'Dvojnásobný příjem ze VŠECH farem',   price:5000000},
+  {id:2, name:'Průmyslová farma',    emoji:'🏭', desc:'Dvojnásobný příjem ze VŠECH farem',   price:500000000},
+  {id:3, name:'MegaFarm Corp',       emoji:'💎', desc:'Dvojnásobný příjem ze VŠECH farem',   price:50000000000},
+  {id:4, name:'Globální agro impérium', emoji:'🏆', desc:'Dvojnásobný příjem ze VŠECH farem', price:5e12},
+];
+
 // ═══════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════
@@ -1169,10 +1186,12 @@ function normalizeBuyMode(m) {
 let state = loadState() || {
   money:0, totalEarned:0, buyMode:'1',
   businesses: BUSINESSES.map(b=>({id:b.id,count:b.id===0?1:0,progress:0,running:false,managerHired:false,upgradeMult:1})),
-  managers:{}, upgrades:{}, prestigeCount:0, totalSeeds:0,
+  managers:{}, upgrades:{}, globalUpgrades:{}, prestigeCount:0, totalSeeds:0,
 };
 // Timery nelze obnovit po restartu – reset running/progress
 if (state.businesses) state.businesses.forEach(b => { b.running = false; b.progress = 0; });
+// Migrace starých save souborů
+if (!state.globalUpgrades) state.globalUpgrades = {};
 
 let buyMode = normalizeBuyMode(state.buyMode);
 state.buyMode = buyMode;
@@ -1227,9 +1246,15 @@ function getMilestoneMult(bizId) {
   return mult;
 }
 
+function getGlobalMult() {
+  let m = 1;
+  for (const gu of GLOBAL_UPGRADES) { if (state.globalUpgrades[gu.id]) m *= 2; }
+  return m;
+}
+
 function getIncome(bizId) {
   const def = getBizDef(bizId), bs = getBizState(bizId);
-  return def.baseIncome * bs.count * getMilestoneMult(bizId) * bs.upgradeMult * (1 + state.totalSeeds*0.1);
+  return def.baseIncome * bs.count * getMilestoneMult(bizId) * bs.upgradeMult * (1 + state.totalSeeds*0.1) * getGlobalMult();
 }
 
 function getPerSec() {
@@ -1288,6 +1313,16 @@ function buyUpgrade(upgradeId) {
   state.upgrades[upgradeId] = true;
   state.businesses[upg.bizId].upgradeMult *= upg.mult;
   notify(`⚡ ${upg.name} zakoupeno!`, 'gold');
+  render(); saveState();
+}
+
+function buyGlobalUpgrade(id) {
+  const upg = GLOBAL_UPGRADES[id];
+  if (!upg || state.globalUpgrades[id]) return;
+  if (state.money < upg.price) { notify('Nemáš dost peněz!'); return; }
+  state.money -= upg.price;
+  state.globalUpgrades[id] = true;
+  notify(`🌍 ${upg.name} – všechny příjmy ×2!`, 'gold');
   render(); saveState();
 }
 
@@ -1500,6 +1535,34 @@ function renderManagers() {
 function renderUpgrades() {
   const list = document.getElementById('upgrades-list');
   list.innerHTML='';
+
+  // ── Globální boostery ──
+  const globalHeader = document.createElement('div');
+  globalHeader.className = 'upg-section-header';
+  globalHeader.textContent = '🌍 Globální boostery · aktuálně ×' + getGlobalMult();
+  list.appendChild(globalHeader);
+
+  for (const upg of GLOBAL_UPGRADES) {
+    const bought = !!state.globalUpgrades[upg.id];
+    const canAfford = state.money >= upg.price;
+    const el = document.createElement('div');
+    el.className = `upg-card global-upg${bought?' bought':''}${!bought&&!canAfford?' cant-afford':''}`;
+    el.innerHTML = `
+      <div class="upg-emoji">${upg.emoji}</div>
+      <div class="upg-info">
+        <div class="upg-name">${upg.name}</div>
+        <div class="upg-desc">${upg.desc}</div>
+      </div>
+      ${bought ? '<span class="upg-done">✓</span>' : `<span class="upg-price">${fmt(upg.price)}</span>`}`;
+    if (!bought) el.addEventListener('click', () => buyGlobalUpgrade(upg.id));
+    list.appendChild(el);
+  }
+
+  const farmHeader = document.createElement('div');
+  farmHeader.className = 'upg-section-header';
+  farmHeader.textContent = '⚡ Upgrady farem';
+  list.appendChild(farmHeader);
+
   for (const upg of UPGRADES) {
     const bought = !!state.upgrades[upg.id];
     const canAfford = state.money>=upg.price;
@@ -1544,7 +1607,9 @@ function updateNotifications() {
   const setDot = (id, on) => document.getElementById(id)?.classList.toggle('visible', on);
   setDot('dot-prestige', calcPrestigeSeeds() >= 1);
   setDot('dot-managers', MANAGERS.some(m => !state.managers[m.id] && isUnlocked(m.bizId) && state.money >= m.price));
-  setDot('dot-upgrades', UPGRADES.some(u => !state.upgrades[u.id] && isUnlocked(u.bizId) && state.money >= u.price));
+  setDot('dot-upgrades',
+    UPGRADES.some(u => !state.upgrades[u.id] && isUnlocked(u.bizId) && state.money >= u.price) ||
+    GLOBAL_UPGRADES.some(u => !state.globalUpgrades[u.id] && state.money >= u.price));
 }
 
 function updateAffordability() {

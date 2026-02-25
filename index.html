@@ -1530,7 +1530,7 @@ function updateAffordability() {
     } else if (amount < 1) {
       btn.textContent = `Nedostatek peněz`;
     } else {
-      btn.textContent = `Koupit ×${amount}  ${fmt(cost)}`;
+      btn.textContent = `Koupit ×${amount} · ${fmt(cost)}`;
     }
 
     const card = document.getElementById(`fc-${def.id}`);

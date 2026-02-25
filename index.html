@@ -1149,6 +1149,8 @@ let state = loadState() || {
   businesses: BUSINESSES.map(b=>({id:b.id,count:b.id===0?1:0,progress:0,running:false,managerHired:false,upgradeMult:1})),
   managers:{}, upgrades:{}, prestigeCount:0, totalSeeds:0,
 };
+// Timery nelze obnovit po restartu – reset running/progress
+if (state.businesses) state.businesses.forEach(b => { b.running = false; b.progress = 0; });
 
 let buyMode = normalizeBuyMode(state.buyMode);
 state.buyMode = buyMode;
@@ -1758,7 +1760,9 @@ auth.onAuthStateChanged(async (user) => {
         money:0, totalEarned:0, buyMode:'1',
         businesses: BUSINESSES.map(b=>({id:b.id,count:b.id===0?1:0,progress:0,running:false,managerHired:false,upgradeMult:1})),
         managers:{}, upgrades:{}, prestigeCount:0, totalSeeds:0,
-        ...cloudSave
+        ...cloudSave,
+        // Timery nelze obnovit – vždy resetuj running/progress
+        businesses: (cloudSave.businesses || []).map(b => ({...b, running:false, progress:0})),
       };
       state = normalized;
       buyMode = normalizeBuyMode(state.buyMode);

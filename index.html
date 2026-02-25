@@ -1360,7 +1360,7 @@ function updateProgressBar(bizId) {
   const bs = getBizState(bizId), def = getBizDef(bizId);
   bar.style.width = (bs.progress*100)+'%';
   if (lbl) {
-    if (bs.running) lbl.textContent = ((1-bs.progress)*def.timer).toFixed(1)+'s';
+    if (bs.running) lbl.textContent = ((1-bs.progress)*def.timer*(bs.timerMult||1)).toFixed(1)+'s';
     else lbl.textContent = bs.count>0 ? 'Připraveno!' : 'Kup první!';
   }
 }

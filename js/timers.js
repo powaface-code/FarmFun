@@ -1,7 +1,11 @@
-// ═══════════════════════════════════════════════
-// PROGRESS TIMERS — herní smyčka farem
-// ═══════════════════════════════════════════════
-function startProgress(bizId) {
+import { BUSINESSES } from './data.js';
+import { state } from './state.js';
+import { getBizState, getBizDef, getIncome, isUnlocked } from './formulas.js';
+import { fmt } from './format.js';
+
+export const progressTimers = {};
+
+export function startProgress(bizId) {
   const bs = getBizState(bizId), def = getBizDef(bizId);
   if (bs.running || bs.count===0) return;
   bs.running=true; bs.progress=0;
@@ -24,9 +28,9 @@ function startProgress(bizId) {
   updateHarvestBtn(bizId);
 }
 
-function updateProgressBar(bizId) {
-  const bar  = document.getElementById(`pb-${bizId}`);
-  const lbl  = document.getElementById(`pl-${bizId}`);
+export function updateProgressBar(bizId) {
+  const bar = document.getElementById(`pb-${bizId}`);
+  const lbl = document.getElementById(`pl-${bizId}`);
   if (!bar) return;
   const bs = getBizState(bizId), def = getBizDef(bizId);
   bar.style.width = (bs.progress*100)+'%';
@@ -36,7 +40,7 @@ function updateProgressBar(bizId) {
   }
 }
 
-function updateHarvestBtn(bizId) {
+export function updateHarvestBtn(bizId) {
   const btn = document.getElementById(`hb-${bizId}`);
   if (!btn) return;
   const bs = getBizState(bizId);
@@ -49,7 +53,7 @@ function updateHarvestBtn(bizId) {
   }
 }
 
-function showFloatMoney(bizId, amount) {
+export function showFloatMoney(bizId, amount) {
   const card = document.getElementById(`fc-${bizId}`);
   if (!card) return;
   const rect = card.getBoundingClientRect();
@@ -62,4 +66,17 @@ function showFloatMoney(bizId, amount) {
   setTimeout(()=>el.remove(), 1100);
   card.classList.add('harvest-flash');
   setTimeout(()=>card.classList.remove('harvest-flash'), 380);
+}
+
+export function syncTimers() {
+  for (const def of BUSINESSES) {
+    const bs = getBizState(def.id);
+    if (!isUnlocked(def.id) && bs.count===0) continue;
+    if (bs.managerHired && bs.count>0) {
+      if (!progressTimers[def.id] && !bs.running) startProgress(def.id);
+      if (bs.running && !progressTimers[def.id]) { bs.running=false; bs.progress=0; startProgress(def.id); }
+    }
+    updateHarvestBtn(def.id);
+    updateProgressBar(def.id);
+  }
 }

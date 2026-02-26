@@ -1,50 +1,46 @@
-// ═══════════════════════════════════════════════
-// UI — notifikace, sheety, prestiž, live update
-// ═══════════════════════════════════════════════
+import { BUSINESSES, MANAGERS, UPGRADES, GLOBAL_UPGRADES } from './data.js';
+import { state, normalizeBuyMode } from './state.js';
+import { getBizState, isUnlocked, calcCost, getBuyAmount, calcPrestigeSeeds, getPerSec, getMilestoneMult } from './formulas.js';
+import { fmt } from './format.js';
+import { render } from './render.js';
+import { saveState } from './save.js';
+import { progressTimers, startProgress } from './timers.js';
+import { notify } from './notify.js';
 
-// ── Toasty ──────────────────────────────────
-function notify(msg, type='') {
-  const el = document.createElement('div');
-  el.className = 'toast'+(type?' '+type:'');
-  el.textContent = msg;
-  document.getElementById('toasts').appendChild(el);
-  setTimeout(()=>el.remove(), 3100);
-}
+let prestigeSeeds = 0;
 
-// ── Navigace a sheety ───────────────────────
-function openSheet(id) {
+export function openSheet(id) {
   document.getElementById(id).classList.add('open');
   document.getElementById('overlay-'+id).classList.add('visible');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const navMap = {'managers-sheet':'nav-managers','upgrades-sheet':'nav-upgrades','stats-sheet':'nav-stats'};
   if (navMap[id]) document.getElementById(navMap[id]).classList.add('active');
 }
-function closeSheet(id) {
+export function closeSheet(id) {
   document.getElementById(id).classList.remove('open');
   document.getElementById('overlay-'+id).classList.remove('visible');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('nav-farms').classList.add('active');
 }
-function showView(v) {
+export function showView() {
   ['managers-sheet','upgrades-sheet','stats-sheet'].forEach(s=>closeSheet(s));
 }
-function setBuyMode(mode, btn) {
-  buyMode = mode; state.buyMode = mode;
+export function setBuyMode(mode, btn) {
+  state.buyMode = mode;
   document.querySelectorAll('.bm-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   render();
 }
 
-// ── Prestiž ─────────────────────────────────
-function openPrestige() {
+export function openPrestige() {
   prestigeSeeds = calcPrestigeSeeds();
   document.getElementById('modal-seeds').textContent = prestigeSeeds+' 🌿';
   document.getElementById('prestige-modal').classList.add('visible');
 }
-function closePrestige() {
+export function closePrestige() {
   document.getElementById('prestige-modal').classList.remove('visible');
 }
-function doPrestige() {
+export function doPrestige() {
   if (prestigeSeeds<1) { notify('Vydělejte 1 mil. Kč pro první prestiž!'); closePrestige(); return; }
   state.totalSeeds += prestigeSeeds;
   state.prestigeCount++;
@@ -54,16 +50,15 @@ function doPrestige() {
   state.businesses = BUSINESSES.map(b=>({id:b.id,count:b.id===0?1:0,progress:0,running:false,managerHired:false,upgradeMult:1,timerMult:1}));
   closePrestige();
   notify(`✨ Prestiž! +${prestigeSeeds} 🌿 Nový bonus: ×${(1+state.totalSeeds*0.1).toFixed(1)}`, 'purple');
-  render(); saveState();
+  render(); saveState(state);
 }
 
-// ── Live update ──────────────────────────────
-function updateMoneyDisplay() {
+export function updateMoneyDisplay() {
   document.getElementById('moneyDisplay').textContent = fmt(state.money);
   document.getElementById('perSecDisplay').textContent = fmt(getPerSec())+'/s';
 }
 
-function updateNotifications() {
+export function updateNotifications() {
   const setDot = (id, on) => document.getElementById(id)?.classList.toggle('visible', on);
   setDot('dot-prestige', calcPrestigeSeeds() >= 1);
   setDot('dot-managers', MANAGERS.some(m => !state.managers[m.id] && isUnlocked(m.bizId) && state.money >= m.price));
@@ -72,7 +67,7 @@ function updateNotifications() {
     GLOBAL_UPGRADES.some(u => !state.globalUpgrades[u.id] && state.money >= u.price));
 }
 
-function updateAffordability() {
+export function updateAffordability() {
   for (const def of BUSINESSES) {
     const btn = document.getElementById(`bb-${def.id}`);
     if (!btn) continue;
@@ -81,13 +76,9 @@ function updateAffordability() {
     const cost = locked ? def.unlockCost : calcCost(def.id, amount);
     const canAfford = !locked && state.money>=cost;
     btn.disabled = !canAfford;
-    if (locked) {
-      btn.textContent = `🔒 ${fmt(def.unlockCost)}`;
-    } else if (amount < 1) {
-      btn.textContent = `Nedostatek peněz`;
-    } else {
-      btn.textContent = `Koupit ×${amount} · ${fmt(cost)}`;
-    }
+    if (locked) btn.textContent = `🔒 ${fmt(def.unlockCost)}`;
+    else if (amount < 1) btn.textContent = `Nedostatek peněz`;
+    else btn.textContent = `Koupit ×${amount} · ${fmt(cost)}`;
     const card = document.getElementById(`fc-${def.id}`);
     if (card) card.classList.toggle('affordable', canAfford && !locked);
   }
@@ -104,7 +95,7 @@ function updateAffordability() {
   }
 }
 
-function updateStats() {
+export function updateStats() {
   document.getElementById('st-total').textContent   = fmt(state.totalEarned);
   document.getElementById('st-rate').textContent    = fmt(getPerSec());
   document.getElementById('st-farms').textContent   = BUSINESSES.filter((_,i)=>isUnlocked(i)).length;

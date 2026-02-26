@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════
 // DATA — definice farem, manažerů, upgradů
 // ═══════════════════════════════════════════════
-const BUSINESSES = [
+export const BUSINESSES = [
   { id:0, name:'Jahodová zahrádka', emoji:'🍓', color:'#f85149', bg:'rgba(248,81,73,0.15)',
     baseCost:4, baseIncome:1.0, timer:1.5, unlockCost:0,
     milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:3,label:'×3'},{at:50,mult:2,label:'×2'},{at:100,mult:5,label:'×5'},{at:200,mult:2,label:'×2'},{at:300,mult:10,label:'×10'},{at:500,mult:2,label:'×2'}]},
@@ -34,7 +34,7 @@ const BUSINESSES = [
     milestones:[{at:10,mult:2,label:'×2'},{at:25,mult:5,label:'×5'},{at:50,mult:3,label:'×3'},{at:100,mult:5,label:'×5'},{at:200,mult:10,label:'×10'},{at:500,mult:25,label:'×25'}]},
 ];
 
-const MANAGERS = [
+export const MANAGERS = [
   {id:0,bizId:0,name:'Jana Jahodová',emoji:'👩‍🌾',desc:'Automatizuje jahodník',price:25},
   {id:1,bizId:1,name:'Karel Mrkvák',emoji:'👨‍🌾',desc:'Automatizuje mrkev',price:500},
   {id:2,bizId:2,name:'Tomáš Rajčeta',emoji:'🧑‍🌾',desc:'Automatizuje rajčata',price:5000},
@@ -47,52 +47,42 @@ const MANAGERS = [
   {id:9,bizId:9,name:'Chilli Khan',emoji:'🎩',desc:'Automatizuje chilli',price:50000000000},
 ];
 
-const UPGRADES = [
-  // ── JAHODY
+export const UPGRADES = [
   {id:0, bizId:0,name:'Lepší půda',       emoji:'🍓',desc:'Kompost a mulč zdvojnásobí výnos jahod',                              price:100,       mult:2},
   {id:1, bizId:0,name:'Závlahový systém', emoji:'💧',desc:'Kapková závlaha ve správný čas – trojnásobná úroda',                  price:8000,      mult:3},
   {id:2, bizId:0,name:'Skleníkové jahody',emoji:'🏠',desc:'Vyhřívaný skleník = sklizeň 365 dní v roce, 5× více',                price:500000,    mult:5},
-  // ── MRKEV
   {id:3, bizId:1,name:'Hnojivo premium',  emoji:'🥕',desc:'NPK granule urychlí klíčení a zdvojnásobí výnos mrkve',              price:1000,      mult:2},
   {id:4, bizId:1,name:'Kombajn na mrkev', emoji:'🚜',desc:'GPS kombajn pokryje 3× více řad najednou bez ztráty',                price:80000,     mult:3},
   {id:5, bizId:1,name:'GMO mrkev',        emoji:'🧬',desc:'Šlechtěný hybrid nese 5× více mrkví na m², odolný vůči suchu',       price:5000000,   mult:5},
-  // ── RAJČATA
   {id:6, bizId:2,name:'Solární skleník',  emoji:'☀️',desc:'LED osvětlení napájené solárními panely – rajčata rostou i v noci',   price:10000,     mult:2},
   {id:7, bizId:2,name:'Hydroponika',      emoji:'🌊',desc:'Kořeny visí ve výživném roztoku bez půdy – 3× rychlejší růst',       price:800000,    mult:3},
   {id:8, bizId:2,name:'Rajčatová věž',    emoji:'🏗️',desc:'5patrová vertikální věž – 5× více rostlin na stejné podlahové ploše',price:50000000,  mult:5},
-  // ── BORŮVKY
   {id:9, bizId:3,name:'Kyselá půda',      emoji:'🫐',desc:'Rašelina sníží pH na 4.5 – borůvky milují kyselé prostředí, 2× více',price:100000,    mult:2},
   {id:10,bizId:3,name:'Mykorrhiza',       emoji:'🍄',desc:'Houbová síť rozšíří kořeny do celé půdy – 3× lepší příjem živin',    price:8000000,   mult:3},
   {id:11,bizId:3,name:'Borůvkový sad+',   emoji:'🌲',desc:'Rozšíříme plantáž na sousední pozemky – 5× více keřů celkem',       price:500000000, mult:5},
-  // ── BROKOLICE
   {id:12,bizId:4,name:'Bio certifikát',   emoji:'🥦',desc:'EU bio certifikát otevře prémiové trhy s 2× vyšší výkupní cenou',   price:1000000,   mult:2},
   {id:13,bizId:4,name:'Chladírenský vůz', emoji:'🚛',desc:'Chladicí vůz rozveze čerstvou brokolici do 3× více obchodů denně',  price:80000000,  mult:3},
   {id:14,bizId:4,name:'Export do EU',     emoji:'🇪🇺',desc:'Vývozní licence do 5 zemí EU – prodej za vyšší ceny, 5× obrat',    price:5e9,       mult:5},
-  // ── HROZNY (+ zkrácení cooldownu)
   {id:15,bizId:5,name:'Starý vinohrad',   emoji:'🍇',desc:'Révy starší 30 let dávají 2× více – sklizeň o polovinu rychlejší',  price:10000000,  mult:2, timerDiv:2},
   {id:16,bizId:5,name:'Vinný sklep',      emoji:'🏚️',desc:'Vlastní zrání v dubových sudech zdvojí cenu – cyklus o polovinu',   price:800000000, mult:2, timerDiv:2},
   {id:17,bizId:5,name:'Château label',    emoji:'🍷',desc:'Luxusní etiketa = 2× vyšší prodejní cena, rychlejší odbyt',          price:5e10,      mult:2, timerDiv:2},
-  // ── MELOUN (+ zkrácení cooldownu)
   {id:18,bizId:6,name:'Včelí opylovači',  emoji:'🐝',desc:'Vlastní úly v sadu zdvojnásobí opylení – sklizeň o polovinu rychleji',price:100000000,mult:2, timerDiv:2},
   {id:19,bizId:6,name:'Prémiové semínko', emoji:'🌱',desc:'Japonská Densuke odrůda nese 2× větší melouny, kratší vegetace',    price:8e9,       mult:2, timerDiv:2},
   {id:20,bizId:6,name:'Megameloun',       emoji:'🍉',desc:'20kg rekordní plody = 2× vyšší výkupní cena, efektivnější sklizeň', price:5e11,      mult:2, timerDiv:2},
-  // ── AVOKÁDO (+ zkrácení cooldownu)
   {id:21,bizId:7,name:'Kalifornský sad',  emoji:'🥑',desc:'Teplé klima Kalifornie umožní celoroční sklizeň – 2× více avokád',  price:1e9,       mult:2, timerDiv:2},
   {id:22,bizId:7,name:'Influencer deal',  emoji:'📱',desc:'Virální TikTok kampaň zdvojnásobí poptávku – sklízíme rychleji',    price:8e10,      mult:2, timerDiv:2},
   {id:23,bizId:7,name:'Avokádo futures',  emoji:'📈',desc:'Spekulace na komoditní burze = 2× vyšší prodejní cena za várku',    price:5e12,      mult:2, timerDiv:2},
-  // ── ANANAS (+ zkrácení cooldownu)
   {id:24,bizId:8,name:'Tropický skleník', emoji:'🍍',desc:'Simulace tropického klimatu zkrátí vegetaci – 2× rychlejší výnos',  price:1e10,      mult:2, timerDiv:2},
   {id:25,bizId:8,name:'Letecký export',   emoji:'✈️',desc:'Letecká přeprava do Evropy = 2× vyšší cena, kratší prodejní cyklus',price:8e11,      mult:2, timerDiv:2},
   {id:26,bizId:8,name:'Ananas imperium',  emoji:'👑',desc:'Monopol na trhu – diktujeme ceny a podmínky, 2× vyšší marže',      price:5e13,      mult:2, timerDiv:2},
-  // ── CHILLI (+ zkrácení cooldownu)
   {id:27,bizId:9,name:'Ghost pepper',     emoji:'🌶️',desc:'Nejpálivější odrůda světa (2M Scoville) = 2× vyšší cena na trhu',  price:1e11,      mult:2, timerDiv:2},
   {id:28,bizId:9,name:'Omáčky & export',  emoji:'🔥',desc:'Vlastní Sriracha značka zdvojnásobí hodnotu – rychlejší výrobní cyklus',price:8e12,  mult:2, timerDiv:2},
   {id:29,bizId:9,name:'Chilli světovláda',emoji:'🌍',desc:'Distribuce do 50 zemí – 2× vyšší obrat a kratší dodací lhůty',     price:5e14,      mult:2, timerDiv:2},
 ];
 
-const COST_GROWTH = 1.15;
+export const COST_GROWTH = 1.15;
 
-const GLOBAL_UPGRADES = [
+export const GLOBAL_UPGRADES = [
   {id:0, name:'Farmářská revoluce',     emoji:'🌱', desc:'Dvojnásobný příjem ze VŠECH farem', price:50000},
   {id:1, name:'Agrární technologie',    emoji:'🚜', desc:'Dvojnásobný příjem ze VŠECH farem', price:5000000},
   {id:2, name:'Průmyslová farma',       emoji:'🏭', desc:'Dvojnásobný příjem ze VŠECH farem', price:500000000},

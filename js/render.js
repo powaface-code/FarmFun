@@ -1,14 +1,18 @@
-// ═══════════════════════════════════════════════
-// RENDER — vykreslování UI
-// ═══════════════════════════════════════════════
-function render() {
+import { BUSINESSES, MANAGERS, UPGRADES, GLOBAL_UPGRADES } from './data.js';
+import { state } from './state.js';
+import { getBizState, getBizDef, isUnlocked, getIncome, getBuyAmount, calcCost, getNextMilestone, getMilestoneMult, getGlobalMult } from './formulas.js';
+import { fmt } from './format.js';
+import { startProgress, updateProgressBar, updateHarvestBtn, syncTimers } from './timers.js';
+import { buyBusiness, buyManager, buyUpgrade, buyGlobalUpgrade } from './actions.js';
+
+export function render() {
   renderFarms();
   renderManagers();
   renderUpgrades();
   syncTimers();
 }
 
-function renderFarms() {
+export function renderFarms() {
   const list = document.getElementById('farmList');
   list.innerHTML = '';
   for (const def of BUSINESSES) {
@@ -74,7 +78,6 @@ function renderFarms() {
         <button class="fc-buy-btn${locked?' locked-btn':''}" id="bb-${def.id}">${buyLabel}</button>
       </div>
     `;
-
     list.appendChild(card);
 
     document.getElementById(`bb-${def.id}`).addEventListener('click', ()=>buyBusiness(def.id));
@@ -92,7 +95,7 @@ function renderFarms() {
   }
 }
 
-function renderManagers() {
+export function renderManagers() {
   const list = document.getElementById('managers-list');
   list.innerHTML='';
   for (const mgr of MANAGERS) {
@@ -118,7 +121,7 @@ function renderManagers() {
   }
 }
 
-function renderUpgrades() {
+export function renderUpgrades() {
   const list = document.getElementById('upgrades-list');
   list.innerHTML='';
 
@@ -164,18 +167,5 @@ function renderUpgrades() {
       ${bought ? '<span class="upg-done">✓</span>' : `<span class="upg-price" style="${!bizUnlocked?'color:var(--text3)':''}">${fmt(upg.price)}</span>`}`;
     if (!bought && bizUnlocked) el.addEventListener('click', ()=>buyUpgrade(upg.id));
     list.appendChild(el);
-  }
-}
-
-function syncTimers() {
-  for (const def of BUSINESSES) {
-    const bs = getBizState(def.id);
-    if (!isUnlocked(def.id) && bs.count===0) continue;
-    if (bs.managerHired && bs.count>0) {
-      if (!progressTimers[def.id] && !bs.running) startProgress(def.id);
-      if (bs.running && !progressTimers[def.id]) { bs.running=false; bs.progress=0; startProgress(def.id); }
-    }
-    updateHarvestBtn(def.id);
-    updateProgressBar(def.id);
   }
 }

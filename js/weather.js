@@ -159,7 +159,7 @@ export function applyGoldenHarvest(bizId, income) {
 export function prepareWeather() {
   const w = state.weather;
   if (!w || w.current === 'sunny' || w.current === 'poststorm' || w.preparedBy) return;
-  const cost = Math.max(1, Math.floor(state.money * 0.02));
+  const cost = Math.max(1, Math.floor(state.money * 0.15));
   if (state.money < cost) { notify('Nemáš dost peněz!'); return; }
   state.money -= cost;
   w.preparedBy = true;
@@ -329,7 +329,7 @@ export function renderWeatherBanner() {
     const canPrepare = !w.preparedBy && w.current !== 'poststorm';
     prepEl.style.display = canPrepare ? '' : 'none';
     if (canPrepare) {
-      const cost = Math.max(1, Math.floor(state.money * 0.02));
+      const cost = Math.max(1, Math.floor(state.money * 0.15));
       prepEl.textContent = `Připravit se (${fmt(cost)})`;
     }
   }

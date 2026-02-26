@@ -72,5 +72,5 @@ export function getPerSec() {
 export function isUnlocked(bizId) { return bizId===0 || state.totalEarned>=getBizDef(bizId).unlockCost; }
 
 export function calcPrestigeSeeds() {
-  return Math.max(0, Math.floor(Math.sqrt(state.totalEarned/1000000)));
+  return Math.max(0, Math.floor(Math.sqrt(state.totalEarned/1000000) * 0.3));
 }

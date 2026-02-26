@@ -4,7 +4,7 @@ import { getBizState, getIncome } from './formulas.js';
 import { fmt } from './format.js';
 import { saveState } from './save.js';
 import { progressTimers, startProgress } from './timers.js';
-import { render } from './render.js';
+import { render, renderFarms } from './render.js';
 import { notify } from './notify.js';
 import {
   updateMoneyDisplay, updateAffordability, updateNotifications, updateStats,
@@ -16,6 +16,7 @@ import {
   switchAuthTab, toggleRegister, doSignInGoogle, doEmailAuth, doSignOut,
   initAuth,
 } from './auth.js';
+import { tickWeather, renderWeatherBanner, initWeather, prepareWeather } from './weather.js';
 
 // Exponovat UI funkce na window (volané z inline HTML onclick atributů)
 window.openSheet = openSheet;
@@ -33,6 +34,7 @@ window.toggleRegister = toggleRegister;
 window.doSignInGoogle = doSignInGoogle;
 window.doEmailAuth = doEmailAuth;
 window.doSignOut = doSignOut;
+window.prepareWeather = prepareWeather;
 
 let lastSaveTime = Date.now();
 
@@ -70,6 +72,8 @@ function init() {
   render();
   gameLoop();
   initAuth();
+  initWeather(renderFarms);
+  setInterval(tickWeather, 1000);
 
   for (const b of BUSINESSES) {
     const bs=getBizState(b.id);

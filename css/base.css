@@ -55,10 +55,11 @@ body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
   background:
-    radial-gradient(ellipse 60% 35% at 20% 0%,   rgba(0,255,179,.10) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 80% 100%,  rgba(216,180,254,.07) 0%, transparent 55%),
-    radial-gradient(ellipse 80% 50% at 50% 50%,   rgba(255,216,77,.03) 0%, transparent 60%);
+    radial-gradient(ellipse 60% 35% at 20% 0%,  var(--season-bg-1, rgba(0,255,179,.10)) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 100%, var(--season-bg-2, rgba(216,180,254,.07)) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 50% 50%,  rgba(255,216,77,.03) 0%, transparent 60%);
   pointer-events: none;
+  transition: background 2s ease;
 }
 
 #app {

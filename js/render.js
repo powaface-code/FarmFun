@@ -4,6 +4,7 @@ import { getBizState, getBizDef, isUnlocked, getIncome, getBuyAmount, calcCost, 
 import { fmt } from './format.js';
 import { startProgress, updateProgressBar, updateHarvestBtn, syncTimers } from './timers.js';
 import { buyBusiness, buyManager, buyUpgrade, buyGlobalUpgrade } from './actions.js';
+import { clearPest } from './weather.js';
 
 export function render() {
   renderFarms();
@@ -91,6 +92,14 @@ export function renderFarms() {
       document.getElementById(`hb-${def.id}`)?.addEventListener('click', ()=>startProgress(def.id));
       updateHarvestBtn(def.id);
       updateProgressBar(def.id);
+    }
+    // Škůdci overlay
+    if (!locked && (state.pestFarms||[]).includes(def.id)) {
+      const pestEl = document.createElement('div');
+      pestEl.className = 'pest-overlay';
+      pestEl.innerHTML = `<button class="pest-btn">🐛 Zahnat (zdarma)</button>`;
+      pestEl.querySelector('.pest-btn').addEventListener('click', () => clearPest(def.id));
+      card.appendChild(pestEl);
     }
   }
 }

@@ -48,6 +48,7 @@ export function doPrestige() {
   Object.keys(progressTimers).forEach(k=>delete progressTimers[k]);
   state.money=0; state.totalEarned=0; state.managers={}; state.upgrades={};
   state.businesses = BUSINESSES.map(b=>({id:b.id,count:b.id===0?1:0,progress:0,running:false,managerHired:false,upgradeMult:1,timerMult:1}));
+  state.frozenFarms=[]; state.pestFarms=[]; state.goldenFarmIds=null; state._butterflyUntil=0;
   closePrestige();
   notify(`✨ Prestiž! +${prestigeSeeds} 🌿 Nový bonus: ×${(1+state.totalSeeds*0.1).toFixed(1)}`, 'purple');
   render(); saveState(state);

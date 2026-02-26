@@ -44,6 +44,7 @@ const db   = firebase.firestore();
     <!-- TOP BAR -->
     <div id="topbar">
       <div class="topbar-logo">🌱 Magnát</div>
+      <span class="topbar-season" id="season-display">🌸 Jaro</span>
       <div class="topbar-money">
         <div class="topbar-money-amount" id="moneyDisplay">0 Kč</div>
         <div class="topbar-money-rate" id="perSecDisplay">0 Kč/s</div>
@@ -59,6 +60,15 @@ const db   = firebase.firestore();
       <button class="bm-btn active" id="buymode-1"   onclick="setBuyMode('1',this)">× 1</button>
       <button class="bm-btn"        id="buymode-ms"  onclick="setBuyMode('milestone',this)">Milník</button>
       <button class="bm-btn"        id="buymode-max" onclick="setBuyMode('max',this)">Max</button>
+    </div>
+
+    <!-- WEATHER BANNER -->
+    <div id="weather-banner" style="display:none">
+      <span id="wb-icon">⛈️</span>
+      <span id="wb-name">Bouřka</span>
+      <div id="wb-progress"><div id="wb-bar"></div></div>
+      <span id="wb-time">1:24</span>
+      <button id="wb-prepare-btn" onclick="prepareWeather()">Připravit se</button>
     </div>
 
     <div id="farmList" style="padding: 6px 8px 0;"></div>

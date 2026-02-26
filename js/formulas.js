@@ -1,5 +1,6 @@
 import { BUSINESSES, GLOBAL_UPGRADES, COST_GROWTH } from './data.js';
 import { state } from './state.js';
+import { getWeatherMult, getSeasonMult, getButterflyMult } from './weather.js';
 
 export const getBizState = id => state.businesses[id];
 export const getBizDef   = id => BUSINESSES[id];
@@ -54,7 +55,9 @@ export function getGlobalMult() {
 
 export function getIncome(bizId) {
   const def = getBizDef(bizId), bs = getBizState(bizId);
-  return def.baseIncome * bs.count * getMilestoneMult(bizId) * bs.upgradeMult * (1 + state.totalSeeds*0.1) * getGlobalMult();
+  return def.baseIncome * bs.count * getMilestoneMult(bizId) * bs.upgradeMult
+    * (1 + state.totalSeeds*0.1) * getGlobalMult()
+    * getWeatherMult(bizId) * getSeasonMult(bizId) * getButterflyMult(bizId);
 }
 
 export function getPerSec() {

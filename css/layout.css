@@ -97,6 +97,80 @@
 }
 .bm-btn:active:not(.active) { opacity: .55; }
 
+/* ─── SEASON INDICATOR ────────────────────── */
+.topbar-season {
+  font-size: .65rem;
+  font-weight: 700;
+  color: var(--t2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: .2px;
+}
+
+/* ─── WEATHER BANNER ──────────────────────── */
+#weather-banner {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 6px 10px 0;
+  padding: 7px 10px;
+  background: rgba(0,0,0,.7);
+  border: 1px solid var(--wb-color, #ffe566);
+  border-radius: var(--r2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 16px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.04);
+}
+#wb-icon { font-size: 1.15rem; flex-shrink: 0; line-height: 1; }
+#wb-name {
+  font-weight: 800;
+  font-size: .78rem;
+  color: var(--wb-color, #ffe566);
+  white-space: nowrap;
+  text-shadow: 0 0 10px var(--wb-color, #ffe566);
+  flex-shrink: 0;
+}
+#wb-progress {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,.1);
+  border-radius: 2px;
+  overflow: hidden;
+  min-width: 32px;
+}
+#wb-bar {
+  height: 100%;
+  background: var(--wb-color, #ffe566);
+  border-radius: 2px;
+  transition: width .8s linear;
+  box-shadow: 0 0 6px var(--wb-color, #ffe566);
+}
+#wb-time {
+  font-size: .72rem;
+  font-family: var(--fd);
+  color: var(--t2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 30px;
+  text-align: right;
+}
+#wb-prepare-btn {
+  background: var(--em-dim);
+  border: 1px solid rgba(0,255,179,.3);
+  border-radius: var(--r1);
+  padding: 4px 8px;
+  color: var(--em);
+  font-family: var(--f);
+  font-size: .62rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  -webkit-appearance: none;
+  transition: all .2s;
+}
+#wb-prepare-btn:active { opacity: .7; transform: scale(.93); }
+
 /* ─── SCROLL & FARM LIST ──────────────────── */
 #scroll-area { padding: 0 0 80px; }
 #farmList { padding: 8px 10px 0; }

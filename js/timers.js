@@ -2,15 +2,20 @@ import { BUSINESSES } from './data.js';
 import { state } from './state.js';
 import { getBizState, getBizDef, getIncome, isUnlocked } from './formulas.js';
 import { fmt } from './format.js';
+import { isFrozen, getFogTimerMult, applyGoldenHarvest } from './weather.js';
 
 export const progressTimers = {};
 
 export function startProgress(bizId) {
   const bs = getBizState(bizId), def = getBizDef(bizId);
   if (bs.running || bs.count===0) return;
+  if (isFrozen(bizId)) return; // zmrazeno mrazem
   bs.running=true; bs.progress=0;
   clearInterval(progressTimers[bizId]);
-  const startTime = Date.now(), duration = def.timer*(bs.timerMult||1)*1000;
+  const startTime = Date.now();
+  const effectiveDur = def.timer*(bs.timerMult||1)*getFogTimerMult();
+  bs.effectiveDuration = effectiveDur;
+  const duration = effectiveDur * 1000;
   progressTimers[bizId] = setInterval(()=>{
     bs.progress = Math.min((Date.now()-startTime)/duration, 1);
     updateProgressBar(bizId);
@@ -18,7 +23,7 @@ export function startProgress(bizId) {
       clearInterval(progressTimers[bizId]);
       delete progressTimers[bizId];
       bs.running=false; bs.progress=0;
-      const income = getIncome(bizId);
+      const income = applyGoldenHarvest(bizId, getIncome(bizId));
       state.money+=income; state.totalEarned+=income;
       showFloatMoney(bizId, income);
       if (bs.managerHired) startProgress(bizId);
@@ -35,8 +40,10 @@ export function updateProgressBar(bizId) {
   const bs = getBizState(bizId), def = getBizDef(bizId);
   bar.style.width = (bs.progress*100)+'%';
   if (lbl) {
-    if (bs.running) lbl.textContent = ((1-bs.progress)*def.timer*(bs.timerMult||1)).toFixed(1)+'s';
-    else lbl.textContent = bs.count>0 ? 'Připraveno!' : 'Kup první!';
+    if (bs.running) {
+      const dur = bs.effectiveDuration || def.timer*(bs.timerMult||1);
+      lbl.textContent = ((1-bs.progress)*dur).toFixed(1)+'s';
+    } else lbl.textContent = bs.count>0 ? 'Připraveno!' : 'Kup první!';
   }
 }
 

@@ -156,17 +156,7 @@
   transition: width .07s linear;
   position: relative;
 }
-.fc-progress-bar::before {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%; right: 0; bottom: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.15) 50%, transparent 100%);
-  animation: shimmer 1.8s infinite;
-}
-@keyframes shimmer {
-  0%   { left: -100%; }
-  100% { left: 200%; }
-}
+/* shimmer animace odebrána — GPU compositing na mobilu */
 .fc-progress-bar::after {
   content: '';
   position: absolute;
@@ -285,10 +275,4 @@
 }
 .pest-btn:active { transform: scale(.93); opacity: .8; }
 
-/* ─── HARVEST FLASH ──────────────────────── */
-@keyframes harvestFlash {
-  0%   { box-shadow: 0 0 0 0 rgba(245,200,66,0); }
-  30%  { box-shadow: 0 0 0 6px rgba(245,200,66,.2), inset 0 0 20px rgba(245,200,66,.06); }
-  100% { box-shadow: 0 0 0 0 rgba(245,200,66,0); }
-}
-.harvest-flash { animation: harvestFlash .38s ease; }
+/* harvest-flash animace odebrána — layout recalculation na mobilu */

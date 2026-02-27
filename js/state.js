@@ -17,7 +17,7 @@ export let state = saved || {
   frozenFarms:[], pestFarms:[], goldenFarmIds:null, nextEventAt:0, _butterflyUntil:0,
 };
 
-if (state.businesses) state.businesses.forEach(b => { b.running=false; b.progress=0; if(!b.timerMult) b.timerMult=1; });
+if (state.businesses) state.businesses.forEach(b => { b.running=false; b.progress=0; if(!b.timerMult) b.timerMult=1; delete b.remainingMs; });
 if (!state.globalUpgrades) state.globalUpgrades = {};
 state.buyMode = normalizeBuyMode(state.buyMode);
 if (!state.weather) state.weather = { current:'sunny', endsAt:0, preparedBy:false, nextWeatherAt:0, nextType:'sunny', warnShown:false };

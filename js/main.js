@@ -36,15 +36,19 @@ window.doEmailAuth = doEmailAuth;
 window.doSignOut = doSignOut;
 window.prepareWeather = prepareWeather;
 
-let lastSaveTime = Date.now();
+let lastSaveTime    = Date.now();
+let lastAffordCheck = 0;
+let lastNotifCheck  = 0;
+let lastWeatherTick = 0;
 
-function gameLoop() {
+// ─── Master tick: 100ms místo 60fps rAF ──────
+function masterTick() {
+  const now = Date.now();
   updateMoneyDisplay();
-  updateAffordability();
-  updateNotifications();
-  updateStats();
-  if (Date.now() - lastSaveTime > 10000) { saveState(state); lastSaveTime = Date.now(); }
-  requestAnimationFrame(gameLoop);
+  if (now - lastAffordCheck > 500)  { updateAffordability(); lastAffordCheck = now; }
+  if (now - lastNotifCheck  > 2000) { updateNotifications(); updateStats(); lastNotifCheck = now; }
+  if (now - lastWeatherTick > 1000) { tickWeather(); lastWeatherTick = now; }
+  if (now - lastSaveTime    > 10000){ saveState(state); lastSaveTime = now; }
 }
 
 function init() {
@@ -70,10 +74,28 @@ function init() {
   if (bmBtn) bmBtn.classList.add('active');
 
   render();
-  gameLoop();
+  setInterval(masterTick, 100);
   initAuth();
   initWeather(renderFarms);
-  setInterval(tickWeather, 1000);
+
+  // ─── Pauza při skrytí tabu ─────────────────
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      Object.keys(progressTimers).forEach(id => {
+        const bs = getBizState(Number(id));
+        bs.remainingMs = Math.max(0, (bs.effectiveDuration||0)*1000*(1-bs.progress));
+        clearInterval(progressTimers[id]);
+        delete progressTimers[id];
+        bs.running = false; bs.progress = 0;
+      });
+      saveState(state);
+    } else {
+      for (const b of BUSINESSES) {
+        const bs = getBizState(b.id);
+        if (bs.remainingMs || (bs.managerHired && bs.count > 0)) startProgress(b.id);
+      }
+    }
+  });
 
   for (const b of BUSINESSES) {
     const bs=getBizState(b.id);

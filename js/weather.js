@@ -297,11 +297,20 @@ function updateSeasonDisplay() {
 
 
 // ─── Weather banner ────────────────────────────
+let _lastWeatherRender = 0;
+let _lastRenderedWeather = '';
+
 export function renderWeatherBanner() {
-  const banner = document.getElementById('weather-banner');
-  if (!banner) return;
+  const now = Date.now();
   const w = state.weather;
   const isSunny = !w || w.current === 'sunny';
+  // Dirty check: překreslit jen při změně počasí nebo každé 2s pro countdown
+  if (!isSunny && w.current === _lastRenderedWeather && now - _lastWeatherRender < 2000) return;
+  _lastWeatherRender = now;
+  _lastRenderedWeather = isSunny ? '' : w.current;
+
+  const banner = document.getElementById('weather-banner');
+  if (!banner) return;
   banner.style.display = isSunny ? 'none' : '';
   if (isSunny) return;
 

@@ -12,12 +12,15 @@ export function startProgress(bizId) {
   if (isFrozen(bizId)) return; // zmrazeno mrazem
   bs.running=true; bs.progress=0;
   clearInterval(progressTimers[bizId]);
-  const startTime = Date.now();
   const effectiveDur = def.timer*(bs.timerMult||1)*getFogTimerMult();
   bs.effectiveDuration = effectiveDur;
-  const duration = effectiveDur * 1000;
+  const totalMs = effectiveDur * 1000;
+  // Při obnově po skrytí tabu: pokračovat ze zbývajícího času
+  const resumeMs = bs.remainingMs || totalMs;
+  delete bs.remainingMs;
+  const startTime = Date.now() - (totalMs - resumeMs);
   progressTimers[bizId] = setInterval(()=>{
-    bs.progress = Math.min((Date.now()-startTime)/duration, 1);
+    bs.progress = Math.min((Date.now()-startTime)/totalMs, 1);
     updateProgressBar(bizId);
     if (bs.progress>=1) {
       clearInterval(progressTimers[bizId]);
@@ -29,7 +32,7 @@ export function startProgress(bizId) {
       if (bs.managerHired) startProgress(bizId);
       else { updateProgressBar(bizId); updateHarvestBtn(bizId); }
     }
-  }, 50);
+  }, 100);
   updateHarvestBtn(bizId);
 }
 
@@ -71,8 +74,6 @@ export function showFloatMoney(bizId, amount) {
   el.style.top=(rect.top+16)+'px';
   document.body.appendChild(el);
   setTimeout(()=>el.remove(), 1100);
-  card.classList.add('harvest-flash');
-  setTimeout(()=>card.classList.remove('harvest-flash'), 380);
 }
 
 export function syncTimers() {

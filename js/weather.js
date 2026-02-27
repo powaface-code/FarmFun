@@ -163,19 +163,69 @@ export function prepareWeather() {
   if (state.money < cost) { notify('Nemáš dost peněz!'); return; }
   state.money -= cost;
   w.preparedBy = true;
+  const remSec = Math.ceil(Math.max(0, (w.endsAt - Date.now()) / 1000));
   if (w.current === 'rainbow') {
     w.endsAt += 30000;
-    notify('🌈 Duha prodloužena o 30s!', 'gold');
+    const newRemSec = Math.ceil((w.endsAt - Date.now()) / 1000);
+    notify(`🌈 Duha prodloužena! Bonus ×2.0 trvá ještě ${newRemSec}s`, 'gold');
   } else if (w.current === 'frost') {
     state.frozenFarms = [];
-    notify('🔥 Připraveno! Farmy odmrazeny, bonus +10%!', 'gold');
+    notify(`❄️→☀️ Farmy odmrazeny! Příjem +10% po zbývající ${remSec}s`, 'gold');
     if (_renderFarms) _renderFarms();
+  } else if (w.current === 'fog') {
+    notify(`🌫️→✨ Mlha zaplašena! Timery normální + příjem +10% po ${remSec}s`, 'gold');
+  } else if (w.current === 'rain') {
+    notify(`☔→✨ Déšť obrácen! Příjem +10% místo −30% po zbývající ${remSec}s`, 'gold');
+  } else if (w.current === 'storm') {
+    notify(`⛈️→✨ Bouřka zažehnána! Příjem +10% místo −50% po ${remSec}s`, 'gold');
   } else {
     const def = WEATHERS[w.current];
-    notify(`${def.emoji} Připraveno! Efekt obrácen na +10%!`, 'gold');
+    notify(`${def.emoji} Připraveno! Příjem +10% po zbývající ${remSec}s`, 'gold');
   }
   renderWeatherBanner();
   saveState(state);
+}
+
+// ─── Modál: info o sezónách a počasí ─────────
+const WEATHER_EFFECTS = {
+  sunny:     'Žádný efekt, normální příjmy.',
+  rain:      'Příjem ×0.7. Příprava → obrátí na +10% po zbývající dobu.',
+  fog:       'Timery ×1.2 pomalejší. Příprava → normální timery + příjem +10%.',
+  storm:     'Příjem ×0.5. Bez přípravy → po skončení bonus ×2.0 na 30s!',
+  frost:     'Až 5 farem zmrazeno (nemohou sklízet). Příprava → odmrazení + +10%.',
+  rainbow:   'Příjem ×2.0 na 60s. Příprava → prodloužení o 30s.',
+  poststorm: 'Bonus ×2.0 na 30s — odměna za nezažehnanou bouřku.',
+};
+
+export function openSeasonModal() {
+  const modal = document.getElementById('season-info-modal');
+  if (!modal) return;
+  const body = document.getElementById('season-info-body');
+  const curSeason = getCurrentSeason();
+  const curWeather = state.weather ? state.weather.current : 'sunny';
+  body.innerHTML =
+    '<div class="si-title">Roční období <span style="color:var(--t3);font-size:.72rem">(každé 10 min)</span></div>' +
+    SEASONS.map(s => {
+      const active = s.id === curSeason.id;
+      const farmEmojis = s.bizIds.map(id => BUSINESSES[id] ? BUSINESSES[id].emoji : '').join(' ');
+      return `<div class="si-row${active ? ' si-active' : ''}">
+        <span>${s.emoji} <strong>${s.name}</strong> <span style="color:var(--t3);font-size:.72rem">×${s.mult}</span></span>
+        <span class="si-tag">${farmEmojis}</span>
+      </div>`;
+    }).join('') +
+    '<div class="si-title" style="margin-top:12px">Počasí</div>' +
+    Object.entries(WEATHERS).map(([key, def]) => {
+      const active = key === curWeather;
+      return `<div class="si-row${active ? ' si-active' : ''}">
+        <span>${def.emoji} <strong>${def.name}</strong></span>
+        <span class="si-effect">${WEATHER_EFFECTS[key] || ''}</span>
+      </div>`;
+    }).join('');
+  modal.classList.add('visible');
+}
+
+export function closeSeasonModal() {
+  document.getElementById('season-info-modal')?.classList.remove('visible');
 }
 
 // ─── Zahnat škůdce ────────────────────────────
@@ -315,7 +365,6 @@ export function renderWeatherBanner() {
   if (isSunny) return;
 
   const def = WEATHERS[w.current] || WEATHERS.sunny;
-  const now = Date.now();
   const remaining = Math.max(0, (w.endsAt - now) / 1000);
   const totalMap = { rainbow:60, poststorm:30, storm:150, frost:150 };
   const total = totalMap[w.current] || 240;

@@ -44,7 +44,7 @@ const db   = firebase.firestore();
     <!-- TOP BAR -->
     <div id="topbar">
       <div class="topbar-logo">🌱 Magnát</div>
-      <span class="topbar-season" id="season-display">🌸 Jaro</span>
+      <span class="topbar-season" id="season-display" onclick="openSeasonModal()" style="cursor:pointer;text-decoration:underline dotted rgba(255,255,255,.25)">🌸 Jaro</span>
       <div class="topbar-money">
         <div class="topbar-money-amount" id="moneyDisplay">0 Kč</div>
         <div class="topbar-money-rate" id="perSecDisplay">0 Kč/s</div>
@@ -153,6 +153,17 @@ const db   = firebase.firestore();
     <div class="modal-btns">
       <button class="modal-cancel" onclick="closePrestige()">Zrušit</button>
       <button class="modal-confirm" onclick="doPrestige()">Potvrdit 🌿</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SEASON INFO MODAL ───────────────────── -->
+<div class="modal-overlay" id="season-info-modal" onclick="closeSeasonModal()">
+  <div class="modal-box" onclick="event.stopPropagation()" style="text-align:left;max-height:78vh;display:flex;flex-direction:column">
+    <div class="modal-title" style="font-size:1.1rem;margin-bottom:12px">🌸 Sezóny &amp; Počasí</div>
+    <div id="season-info-body" class="modal-body" style="overflow-y:auto;margin-bottom:14px;flex:1"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeSeasonModal()">Zavřít</button>
     </div>
   </div>
 </div>

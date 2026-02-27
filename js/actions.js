@@ -1,7 +1,7 @@
 import { BUSINESSES, MANAGERS, UPGRADES, GLOBAL_UPGRADES } from './data.js';
 import { state } from './state.js';
 import { getBizState, getBizDef, isUnlocked, getBuyAmount, calcCost } from './formulas.js';
-import { startProgress } from './timers.js';
+import { startProgress, restartProgressIfRunning } from './timers.js';
 import { saveState } from './save.js';
 import { render } from './render.js';
 import { notify } from './notify.js';
@@ -43,7 +43,10 @@ export function buyUpgrade(upgradeId) {
   state.money -= upg.price;
   state.upgrades[upgradeId] = true;
   state.businesses[upg.bizId].upgradeMult *= upg.mult;
-  if (upg.timerDiv) state.businesses[upg.bizId].timerMult /= upg.timerDiv;
+  if (upg.timerDiv) {
+    state.businesses[upg.bizId].timerMult /= upg.timerDiv;
+    restartProgressIfRunning(upg.bizId);
+  }
   notify(`⚡ ${upg.name} zakoupeno!`, 'gold');
   render(); saveState(state);
 }

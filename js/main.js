@@ -16,7 +16,7 @@ import {
   switchAuthTab, toggleRegister, doSignInGoogle, doEmailAuth, doSignOut,
   initAuth,
 } from './auth.js';
-import { tickWeather, renderWeatherBanner, initWeather, prepareWeather } from './weather.js';
+import { tickWeather, renderWeatherBanner, initWeather, prepareWeather, openSeasonModal, closeSeasonModal } from './weather.js';
 
 // Exponovat UI funkce na window (volané z inline HTML onclick atributů)
 window.openSheet = openSheet;
@@ -35,6 +35,8 @@ window.doSignInGoogle = doSignInGoogle;
 window.doEmailAuth = doEmailAuth;
 window.doSignOut = doSignOut;
 window.prepareWeather = prepareWeather;
+window.openSeasonModal = openSeasonModal;
+window.closeSeasonModal = closeSeasonModal;
 
 let lastSaveTime    = Date.now();
 let lastAffordCheck = 0;
@@ -45,8 +47,8 @@ let lastWeatherTick = 0;
 function masterTick() {
   const now = Date.now();
   updateMoneyDisplay();
-  if (now - lastAffordCheck > 500)  { updateAffordability(); lastAffordCheck = now; }
-  if (now - lastNotifCheck  > 2000) { updateNotifications(); updateStats(); lastNotifCheck = now; }
+  if (now - lastAffordCheck > 500)  { updateAffordability(); updateNotifications(); lastAffordCheck = now; }
+  if (now - lastNotifCheck  > 2000) { updateStats(); lastNotifCheck = now; }
   if (now - lastWeatherTick > 1000) { tickWeather(); lastWeatherTick = now; }
   if (now - lastSaveTime    > 10000){ saveState(state); lastSaveTime = now; }
 }

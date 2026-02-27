@@ -76,6 +76,20 @@ export function showFloatMoney(bizId, amount) {
   setTimeout(()=>el.remove(), 1100);
 }
 
+export function restartProgressIfRunning(bizId) {
+  const bs = getBizState(bizId);
+  if (!bs.running) return;
+  const def = getBizDef(bizId);
+  const newEffective = def.timer * (bs.timerMult || 1) * getFogTimerMult();
+  // Preserve proportional remaining time on the new (shorter) timer
+  bs.remainingMs = (1 - bs.progress) * newEffective * 1000;
+  clearInterval(progressTimers[bizId]);
+  delete progressTimers[bizId];
+  bs.running = false;
+  bs.progress = 0;
+  startProgress(bizId);
+}
+
 export function syncTimers() {
   for (const def of BUSINESSES) {
     const bs = getBizState(def.id);

@@ -96,6 +96,24 @@
   100% { transform:translateY(-55px) scale(.82); opacity:0; }
 }
 
+/* ─── SEASON INFO MODAL ──────────────────── */
+.si-title {
+  font-size: .72rem; font-weight: 800; color: var(--t3);
+  text-transform: uppercase; letter-spacing: .8px;
+  margin-bottom: 6px;
+}
+.si-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 8px; padding: 7px 0;
+  border-bottom: 1px solid var(--bd);
+  font-size: .82rem; color: var(--t2);
+}
+.si-row:last-child { border-bottom: none; }
+.si-row.si-active { color: var(--t1); background: rgba(0,255,179,.04); border-radius: 6px; padding: 7px 6px; margin: 0 -6px; }
+.si-row strong { color: var(--t1); }
+.si-tag { flex-shrink: 0; font-size: .88rem; letter-spacing: 2px; }
+.si-effect { font-size: .75rem; color: var(--t3); text-align: right; max-width: 58%; line-height: 1.4; }
+
 /* ─── LOCKED ──────────────────────────────── */
 .biz-locked { opacity:.3; cursor:not-allowed; }
 .biz-locked:active { opacity:.3; }

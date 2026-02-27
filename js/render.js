@@ -143,6 +143,7 @@ export function renderUpgrades() {
     const bought = !!state.globalUpgrades[upg.id];
     const canAfford = state.money >= upg.price;
     const el = document.createElement('div');
+    el.id = `global-upg-card-${upg.id}`;
     el.className = `upg-card global-upg${bought?' bought':''}${!bought&&!canAfford?' cant-afford':''}`;
     el.innerHTML = `
       <div class="upg-emoji">${upg.emoji}</div>

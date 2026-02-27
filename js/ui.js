@@ -94,6 +94,11 @@ export function updateAffordability() {
     if (!card || state.upgrades[upg.id]) continue;
     card.classList.toggle('cant-afford', state.money<upg.price);
   }
+  for (const upg of GLOBAL_UPGRADES) {
+    const card = document.getElementById(`global-upg-card-${upg.id}`);
+    if (!card || state.globalUpgrades[upg.id]) continue;
+    card.classList.toggle('cant-afford', state.money<upg.price);
+  }
 }
 
 export function updateStats() {

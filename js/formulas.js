@@ -1,4 +1,4 @@
-import { BUSINESSES, GLOBAL_UPGRADES, COST_GROWTH } from './data.js';
+import { BUSINESSES, GLOBAL_UPGRADES, COST_GROWTH, COST_MULT } from './data.js';
 import { state } from './state.js';
 import { getWeatherMult, getSeasonMult, getButterflyMult } from './weather.js';
 
@@ -7,8 +7,8 @@ export const getBizDef   = id => BUSINESSES[id];
 
 export function calcCost(bizId, amount) {
   const def = getBizDef(bizId), owned = getBizState(bizId).count;
-  if (amount===1) return def.baseCost * Math.pow(COST_GROWTH, owned);
-  return def.baseCost * Math.pow(COST_GROWTH, owned) * (Math.pow(COST_GROWTH,amount)-1) / (COST_GROWTH-1);
+  if (amount===1) return def.baseCost * Math.pow(COST_GROWTH, owned) * COST_MULT;
+  return def.baseCost * Math.pow(COST_GROWTH, owned) * (Math.pow(COST_GROWTH,amount)-1) / (COST_GROWTH-1) * COST_MULT;
 }
 
 export function calcMaxBuy(bizId) {
@@ -16,7 +16,7 @@ export function calcMaxBuy(bizId) {
   let lo=1, hi=2000, best=0;
   while (lo<=hi) {
     const mid = Math.floor((lo+hi)/2);
-    const cost = def.baseCost * Math.pow(COST_GROWTH,owned) * (Math.pow(COST_GROWTH,mid)-1) / (COST_GROWTH-1);
+    const cost = def.baseCost * Math.pow(COST_GROWTH,owned) * (Math.pow(COST_GROWTH,mid)-1) / (COST_GROWTH-1) * COST_MULT;
     if (cost<=state.money) { best=mid; lo=mid+1; } else hi=mid-1;
   }
   return best;
@@ -78,7 +78,7 @@ export function getPerSec() {
 export function isUnlocked(bizId) { return bizId===0 || state.totalEarned>=getBizDef(bizId).unlockCost; }
 
 export function calcPrestigeSeeds() {
-  return Math.max(0, Math.floor(Math.sqrt(state.totalEarned/1000000) * 0.6));
+  return Math.max(0, Math.floor(Math.sqrt(state.totalEarned/1000000) * 0.78));
 }
 
 export function isLevelComplete() {

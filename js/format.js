@@ -1,3 +1,8 @@
+export function fmtInt(n) {
+  if (!isFinite(n) || isNaN(n)) return '0';
+  return Math.floor(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
 export function fmt(n) {
   if (!isFinite(n) || isNaN(n)) return '∞ Kč';
   if (n<1e3)  return n.toFixed(0)+' Kč';

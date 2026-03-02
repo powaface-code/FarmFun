@@ -1,7 +1,7 @@
 import { BUSINESSES, MANAGERS, UPGRADES, GLOBAL_UPGRADES } from './data.js';
 import { state, normalizeBuyMode } from './state.js';
 import { getBizState, isUnlocked, isMaxed, calcCost, getBuyAmount, calcPrestigeSeeds, getPerSec, getMilestoneMult } from './formulas.js';
-import { fmt } from './format.js';
+import { fmt, fmtInt } from './format.js';
 import { render } from './render.js';
 import { saveState } from './save.js';
 import { progressTimers, startProgress } from './timers.js';
@@ -34,7 +34,7 @@ export function setBuyMode(mode, btn) {
 
 export function openPrestige() {
   prestigeSeeds = calcPrestigeSeeds();
-  document.getElementById('modal-seeds').textContent = prestigeSeeds+' 🌿';
+  document.getElementById('modal-seeds').textContent = fmtInt(prestigeSeeds)+' 🌿';
   document.getElementById('prestige-modal').classList.add('visible');
 }
 export function closePrestige() {
@@ -49,7 +49,7 @@ export function doPrestige() {
   state.businesses = BUSINESSES.map(b=>({id:b.id,count:b.id===0?1:0,progress:0,running:false,managerHired:false,upgradeMult:1,timerMult:1}));
   state.frozenFarms=[]; state.pestFarms=[]; state.goldenFarmIds=null; state._butterflyUntil=0;
   closePrestige();
-  notify(`✨ Prestiž! +${prestigeSeeds} 🌿 Nový bonus: ×${(1+state.totalSeeds*0.1).toFixed(1)}`, 'purple');
+  notify(`✨ Prestiž! +${fmtInt(prestigeSeeds)} 🌿 Nový bonus: ×${(1+state.totalSeeds*0.1).toFixed(1)}`, 'purple');
   render(); saveState(state);
 }
 
@@ -107,9 +107,9 @@ export function updateStats() {
   document.getElementById('st-rate').textContent    = fmt(getPerSec());
   document.getElementById('st-farms').textContent   = BUSINESSES.filter((_,i)=>isUnlocked(i)).length;
   document.getElementById('st-mgr').textContent     = Object.keys(state.managers).length;
-  document.getElementById('st-seeds').textContent   = state.totalSeeds+' 🌿';
+  document.getElementById('st-seeds').textContent   = fmtInt(state.totalSeeds)+' 🌿';
   document.getElementById('st-prestige').textContent = state.prestigeCount;
   const seeds = calcPrestigeSeeds();
-  document.getElementById('st-seeds-preview').textContent = `Získáš: ${seeds} 🌿`;
+  document.getElementById('st-seeds-preview').textContent = `Získáš: ${fmtInt(seeds)} 🌿`;
   document.getElementById('st-prestige-mult').textContent = '×'+(1+state.totalSeeds*0.1).toFixed(1);
 }

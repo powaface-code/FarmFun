@@ -195,6 +195,7 @@ export let UPGRADES       = LEVELS[0].upgrades;
 export let GLOBAL_UPGRADES = LEVELS[0].globalUpgrades;
 
 export const COST_GROWTH = 1.15;
+export const COST_MULT   = 0.20;  // globální sleva — nákup do maxima stojí ~20 % původní ceny
 
 export function setActiveLevel(levelId) {
   const lvl = LEVELS[levelId];

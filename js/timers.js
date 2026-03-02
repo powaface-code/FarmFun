@@ -7,6 +7,26 @@ import { isFrozen, getFogTimerMult, applyGoldenHarvest } from './weather.js';
 // Flagy běžících farem (místo per-farm setInterval)
 export const progressTimers = {};
 
+// ─── CSS transition helper: spustí plynulou GPU animaci baru ───
+function setCssTransition(bizId, remainingMs) {
+  const bar = document.getElementById(`pb-${bizId}`);
+  if (!bar) return;
+  const bs = getBizState(bizId);
+  const totalMs = bs._totalMs || 1;
+  const currentProgress = 1 - remainingMs / totalMs;
+
+  // 1. Nastav start pozici BEZ animace
+  bar.style.transition = 'none';
+  bar.style.transform = `scaleX(${Math.max(0, currentProgress)})`;
+
+  // 2. Force reflow — prohlížeč musí aplikovat startovní pozici
+  bar.offsetWidth;
+
+  // 3. Nastav cíl S plynulou CSS transition → GPU animuje na 60fps
+  bar.style.transition = `transform ${Math.max(0, remainingMs)}ms linear`;
+  bar.style.transform = 'scaleX(1)';
+}
+
 export function startProgress(bizId) {
   const bs = getBizState(bizId), def = getBizDef(bizId);
   if (bs.running || bs.count===0) return;
@@ -21,6 +41,9 @@ export function startProgress(bizId) {
   bs._totalMs = totalMs;
   progressTimers[bizId] = true;
   updateHarvestBtn(bizId);
+
+  // Spustit CSS transition animaci
+  setCssTransition(bizId, resumeMs);
 }
 
 // ─── Jeden tick pro VŠECHNY farmy (voláno z masterTick) ──
@@ -37,11 +60,8 @@ export function tickAllProgress() {
     const bs = getBizState(bizId);
     if (!bs.running) { delete progressTimers[bizId]; continue; }
 
+    // Progress kalkulace pro detekci dokončení + label (bar animuje CSS)
     bs.progress = Math.min((now - bs._startTime) / bs._totalMs, 1);
-
-    // GPU composited transform (žádný layout recalc)
-    const bar = document.getElementById(`pb-${bizId}`);
-    if (bar) bar.style.transform = `scaleX(${bs.progress})`;
 
     // Label update throttled na ~250ms
     if (doLabel) {
@@ -60,9 +80,10 @@ export function tickAllProgress() {
       state.money += income; state.totalEarned += income;
       showFloatMoney(bizId, income);
       if (bs.managerHired) {
-        startProgress(bizId);
+        startProgress(bizId); // setCssTransition se zavolá uvnitř
       } else {
-        if (bar) bar.style.transform = 'scaleX(0)';
+        const bar = document.getElementById(`pb-${bizId}`);
+        if (bar) { bar.style.transition = 'none'; bar.style.transform = 'scaleX(0)'; }
         const lbl = document.getElementById(`pl-${bizId}`);
         if (lbl) lbl.textContent = 'Připraveno!';
         updateHarvestBtn(bizId);
@@ -76,7 +97,17 @@ export function updateProgressBar(bizId) {
   const bar = document.getElementById(`pb-${bizId}`);
   if (!bar) return;
   const bs = getBizState(bizId);
-  bar.style.transform = `scaleX(${bs.progress})`;
+
+  if (bs.running && bs._startTime && bs._totalMs) {
+    // Obnovit CSS transition po re-renderu (nový DOM element)
+    const now = Date.now();
+    const remaining = Math.max(0, bs._totalMs - (now - bs._startTime));
+    setCssTransition(bizId, remaining);
+  } else {
+    bar.style.transition = 'none';
+    bar.style.transform = `scaleX(${bs.progress || 0})`;
+  }
+
   const lbl = document.getElementById(`pl-${bizId}`);
   if (lbl) {
     if (bs.running) {

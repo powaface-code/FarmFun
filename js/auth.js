@@ -1,4 +1,4 @@
-import { BUSINESSES } from './data.js';
+import { BUSINESSES, setActiveLevel } from './data.js';
 import { state, normalizeBuyMode } from './state.js';
 import { getBizState } from './formulas.js';
 import { saveState, loadState, loadCloudState } from './save.js';
@@ -94,11 +94,13 @@ function applyCloudState(cloudSave) {
     businesses: (cloudSave.businesses || []).map(b => ({timerMult:1, ...b, running:false, progress:0})),
   };
   if (!normalized.globalUpgrades) normalized.globalUpgrades = {};
+  if (normalized.currentLevel === undefined) normalized.currentLevel = 0;
+  if (!normalized.levelData) normalized.levelData = {};
   Object.keys(state).forEach(k => delete state[k]);
   Object.assign(state, normalized);
   state.buyMode = normalizeBuyMode(state.buyMode);
+  setActiveLevel(state.currentLevel);
   localStorage.setItem('farmtycoon_v3', JSON.stringify(state));
-  for (const id in progressTimers) clearInterval(progressTimers[id]);
   Object.keys(progressTimers).forEach(k => delete progressTimers[k]);
   render();
   for (const b of BUSINESSES) {

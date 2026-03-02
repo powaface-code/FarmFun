@@ -113,6 +113,14 @@ export function showFloatMoney(bizId, amount) {
   setTimeout(()=>el.remove(), 1100);
 }
 
+export function stopAllTimers() {
+  for (const k of Object.keys(progressTimers)) {
+    const bs = getBizState(Number(k));
+    if (bs) { bs.running = false; bs.progress = 0; }
+    delete progressTimers[k];
+  }
+}
+
 export function restartProgressIfRunning(bizId) {
   const bs = getBizState(bizId);
   if (!bs.running) return;

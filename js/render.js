@@ -5,11 +5,13 @@ import { fmt } from './format.js';
 import { startProgress, updateProgressBar, updateHarvestBtn, syncTimers } from './timers.js';
 import { buyBusiness, buyManager, buyUpgrade, buyGlobalUpgrade } from './actions.js';
 import { clearPest } from './weather.js';
+import { renderLevels } from './levels.js';
 
 export function render() {
   renderFarms();
   renderManagers();
   renderUpgrades();
+  renderLevels();
   syncTimers();
 }
 

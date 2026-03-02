@@ -13,7 +13,7 @@ export function openSheet(id) {
   document.getElementById(id).classList.add('open');
   document.getElementById('overlay-'+id).classList.add('visible');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const navMap = {'managers-sheet':'nav-managers','upgrades-sheet':'nav-upgrades','stats-sheet':'nav-stats'};
+  const navMap = {'managers-sheet':'nav-managers','upgrades-sheet':'nav-upgrades','stats-sheet':'nav-stats','levels-sheet':'nav-levels'};
   if (navMap[id]) document.getElementById(navMap[id]).classList.add('active');
 }
 export function closeSheet(id) {
@@ -23,7 +23,7 @@ export function closeSheet(id) {
   document.getElementById('nav-farms').classList.add('active');
 }
 export function showView() {
-  ['managers-sheet','upgrades-sheet','stats-sheet'].forEach(s=>closeSheet(s));
+  ['managers-sheet','upgrades-sheet','stats-sheet','levels-sheet'].forEach(s=>closeSheet(s));
 }
 export function setBuyMode(mode, btn) {
   state.buyMode = mode;

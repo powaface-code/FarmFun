@@ -1,4 +1,15 @@
+// Per-level fields that get synced to/from levelData
+const LEVEL_FIELDS = ['money','totalEarned','businesses','managers','upgrades','globalUpgrades','totalSeeds','prestigeCount'];
+
+export function syncLevelToData(state) {
+  if (!state.levelData) state.levelData = {};
+  const d = {};
+  for (const k of LEVEL_FIELDS) d[k] = state[k];
+  state.levelData[state.currentLevel] = JSON.parse(JSON.stringify(d));
+}
+
 export async function saveState(state) {
+  syncLevelToData(state);
   state.lastSaved = Date.now();
   localStorage.setItem('farmtycoon_v3', JSON.stringify(state));
   const user = auth.currentUser;

@@ -17,6 +17,7 @@ import {
   initAuth,
 } from './auth.js';
 import { tickWeather, renderWeatherBanner, initWeather, prepareWeather, openSeasonModal, closeSeasonModal } from './weather.js';
+import { switchLevel, initLevels } from './levels.js';
 
 // Exponovat UI funkce na window (volané z inline HTML onclick atributů)
 window.openSheet = openSheet;
@@ -37,6 +38,7 @@ window.doSignOut = doSignOut;
 window.prepareWeather = prepareWeather;
 window.openSeasonModal = openSeasonModal;
 window.closeSeasonModal = closeSeasonModal;
+window.switchLevel = switchLevel;
 
 let lastSaveTime    = Date.now();
 let lastAffordCheck = 0;
@@ -80,6 +82,7 @@ function init() {
   setInterval(masterTick, 100);
   initAuth();
   initWeather(renderFarms);
+  initLevels(render);
 
   // ─── Pauza při skrytí tabu ─────────────────
   document.addEventListener('visibilitychange', () => {

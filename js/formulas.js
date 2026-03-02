@@ -80,3 +80,7 @@ export function isUnlocked(bizId) { return bizId===0 || state.totalEarned>=getBi
 export function calcPrestigeSeeds() {
   return Math.max(0, Math.floor(Math.sqrt(state.totalEarned/1000000) * 0.6));
 }
+
+export function isLevelComplete() {
+  return BUSINESSES.every(b => isMaxed(b.id));
+}

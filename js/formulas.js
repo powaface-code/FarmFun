@@ -34,7 +34,13 @@ export function calcMilestoneBuy(bizId) {
   return needed > 0 ? needed : 1;
 }
 
+export function isMaxed(bizId) {
+  const bs = getBizState(bizId);
+  return bs.count > 0 && !getNextMilestone(bizId);
+}
+
 export function getBuyAmount(bizId) {
+  if (isMaxed(bizId)) return 0;
   if (state.buyMode==='max')       return Math.max(1, calcMaxBuy(bizId));
   if (state.buyMode==='milestone') return calcMilestoneBuy(bizId);
   return 1;

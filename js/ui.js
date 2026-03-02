@@ -1,6 +1,6 @@
 import { BUSINESSES, MANAGERS, UPGRADES, GLOBAL_UPGRADES } from './data.js';
 import { state, normalizeBuyMode } from './state.js';
-import { getBizState, isUnlocked, calcCost, getBuyAmount, calcPrestigeSeeds, getPerSec, getMilestoneMult } from './formulas.js';
+import { getBizState, isUnlocked, isMaxed, calcCost, getBuyAmount, calcPrestigeSeeds, getPerSec, getMilestoneMult } from './formulas.js';
 import { fmt } from './format.js';
 import { render } from './render.js';
 import { saveState } from './save.js';
@@ -72,6 +72,8 @@ export function updateAffordability() {
     const btn = document.getElementById(`bb-${def.id}`);
     if (!btn) continue;
     const locked = !isUnlocked(def.id);
+    const maxed = !locked && isMaxed(def.id);
+    if (maxed) { btn.disabled = true; btn.textContent = '✅ Maximum'; const card = document.getElementById(`fc-${def.id}`); if (card) card.classList.remove('affordable'); continue; }
     const amount = getBuyAmount(def.id);
     const cost = locked ? def.unlockCost : calcCost(def.id, amount);
     const canAfford = !locked && state.money>=cost;

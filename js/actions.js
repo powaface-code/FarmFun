@@ -1,6 +1,6 @@
 import { BUSINESSES, MANAGERS, UPGRADES, GLOBAL_UPGRADES } from './data.js';
 import { state } from './state.js';
-import { getBizState, getBizDef, isUnlocked, getBuyAmount, calcCost } from './formulas.js';
+import { getBizState, getBizDef, isUnlocked, isMaxed, getBuyAmount, calcCost } from './formulas.js';
 import { startProgress, restartProgressIfRunning } from './timers.js';
 import { saveState } from './save.js';
 import { render } from './render.js';
@@ -8,6 +8,7 @@ import { notify } from './notify.js';
 
 export function buyBusiness(bizId) {
   if (!isUnlocked(bizId)) return;
+  if (isMaxed(bizId)) return;
   const amount = getBuyAmount(bizId);
   if (amount<1) { notify('Nemáš dost peněz!'); return; }
   const cost = calcCost(bizId, amount);

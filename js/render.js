@@ -1,6 +1,6 @@
 import { BUSINESSES, MANAGERS, UPGRADES, GLOBAL_UPGRADES } from './data.js';
 import { state } from './state.js';
-import { getBizState, getBizDef, isUnlocked, getIncome, getBuyAmount, calcCost, getNextMilestone, getMilestoneMult, getGlobalMult } from './formulas.js';
+import { getBizState, getBizDef, isUnlocked, isMaxed, getIncome, getBuyAmount, calcCost, getNextMilestone, getMilestoneMult, getGlobalMult } from './formulas.js';
 import { fmt } from './format.js';
 import { startProgress, updateProgressBar, updateHarvestBtn, syncTimers } from './timers.js';
 import { buyBusiness, buyManager, buyUpgrade, buyGlobalUpgrade } from './actions.js';
@@ -22,7 +22,8 @@ export function renderFarms() {
     const locked = !unlocked;
     const amount = getBuyAmount(def.id);
     const cost = locked ? def.unlockCost : calcCost(def.id, amount);
-    const canAfford = !locked && state.money>=cost;
+    const maxed = !locked && isMaxed(def.id);
+    const canAfford = !locked && !maxed && state.money>=cost;
     const income = getIncome(def.id);
 
     const msBadges = def.milestones.map(m=>{
@@ -41,7 +42,7 @@ export function renderFarms() {
       msProgressHTML = `<div class="fc-ms-progress" style="background:rgba(63,185,80,0.1)"><span class="fc-ms-label" style="color:var(--green)">✅ Všechny milníky</span></div>`;
     }
 
-    let buyLabel = locked ? `🔒 ${fmt(def.unlockCost)}` : `Koupit ×${amount} · ${fmt(cost)}`;
+    let buyLabel = locked ? `🔒 ${fmt(def.unlockCost)}` : maxed ? '✅ Maximum' : `Koupit ×${amount} · ${fmt(cost)}`;
 
     const card = document.createElement('div');
     card.id = `fc-${def.id}`;
@@ -76,7 +77,7 @@ export function renderFarms() {
           ? `<button class="fc-harvest-btn" id="hb-${def.id}">▶</button>`
           : `<div style="width:52px"></div>`
         }
-        <button class="fc-buy-btn${locked?' locked-btn':''}" id="bb-${def.id}"${!canAfford?' disabled':''}>${buyLabel}</button>
+        <button class="fc-buy-btn${locked?' locked-btn':''}${maxed?' maxed-btn':''}" id="bb-${def.id}"${!canAfford||maxed?' disabled':''}>${buyLabel}</button>
       </div>
     `;
     list.appendChild(card);

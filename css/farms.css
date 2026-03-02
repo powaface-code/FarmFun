@@ -242,6 +242,12 @@
   border-color: var(--bd);
   color: var(--t3);
 }
+.fc-buy-btn.maxed-btn {
+  background: rgba(63,185,80,.08);
+  border-color: rgba(63,185,80,.25);
+  color: var(--green, #3fb950);
+  opacity: .7;
+}
 .fc-lock-info {
   font-size: .62rem; color: var(--t3);
   text-align: center;

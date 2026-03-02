@@ -7,6 +7,9 @@
   overflow: hidden;
   position: relative;
   transition: border-color .2s;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
 }
 
 .farm-card::before {
@@ -14,15 +17,8 @@
   position: absolute;
   top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
-}
-.farm-card::after {
-  content: '';
-  position: absolute;
-  top: 12px; left: 0; bottom: 12px;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
-  background: var(--card-color, var(--em));
-  opacity: .6;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .farm-card.affordable {
@@ -34,24 +30,30 @@
   filter: saturate(.3);
 }
 
-.fc-top {
+/* ─── IMAGE COLUMN ─────────────────────────── */
+.fc-img-wrap {
+  width: 86px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  padding: 8px 12px 0;
-  gap: 9px;
-}
-.fc-icon {
-  width: 42px; height: 42px;
-  border-radius: var(--r1);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
+  justify-content: center;
   position: relative;
-  border: 1px solid var(--bd2);
+  overflow: hidden;
 }
-.fc-icon .badge {
+.fc-img {
+  width: 74px;
+  height: 74px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+.fc-img-emoji {
+  font-size: 2.8rem;
+  line-height: 1;
+}
+.fc-img-wrap .badge {
   position: absolute;
-  bottom: -4px; right: -5px;
+  bottom: 4px; right: 4px;
   background: var(--re);
   color: #fff;
   font-size: .56rem;
@@ -62,7 +64,15 @@
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(0,0,0,.5);
 }
-.fc-meta { flex: 1; min-width: 0; }
+
+/* ─── CONTENT COLUMN ───────────────────────── */
+.fc-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 7px 10px 8px;
+}
 .fc-name {
   font-size: .84rem;
   font-weight: 700;
@@ -92,7 +102,7 @@
   display: flex;
   gap: 4px;
   overflow: hidden;
-  margin: 4px 12px 0;
+  margin-top: 4px;
 }
 .ms-badge {
   font-size: .52rem;
@@ -116,7 +126,7 @@
 
 /* Milestone progress */
 .fc-ms-progress {
-  margin: 4px 12px 0;
+  margin-top: 4px;
   height: 10px;
   background: var(--s3);
   border-radius: 50px;
@@ -141,7 +151,7 @@
 
 /* Harvest progress */
 .fc-progress {
-  margin: 5px 12px 0;
+  margin-top: 4px;
   height: 20px;
   background: var(--s3);
   border-radius: 50px;
@@ -158,7 +168,6 @@
   will-change: transform;
   position: relative;
 }
-/* shimmer animace odebrána — GPU compositing na mobilu */
 .fc-progress-bar::after {
   content: '';
   position: absolute;
@@ -179,8 +188,7 @@
 .fc-actions {
   display: flex;
   gap: 7px;
-  padding: 6px 12px 10px;
-  margin-top: 4px;
+  margin-top: 5px;
 }
 
 .fc-harvest-btn {
@@ -250,8 +258,7 @@
 }
 .fc-lock-info {
   font-size: .62rem; color: var(--t3);
-  text-align: center;
-  padding: 3px 14px 10px;
+  padding: 3px 0 4px;
   letter-spacing: .2px;
 }
 
@@ -282,5 +289,3 @@
   transition: all .18s;
 }
 .pest-btn:active { transform: scale(.93); opacity: .8; }
-
-/* harvest-flash animace odebrána — layout recalculation na mobilu */

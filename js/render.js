@@ -15,9 +15,16 @@ export function render() {
   syncTimers();
 }
 
+const FARM_IMAGES = [
+  'strawberry.png','carrot.png','tomato.png','blueberry.png','brocolli.png',
+  'grape.png','water_melon.png','avocado.png','pineapple.png','chilli.png',
+];
+
 export function renderFarms() {
   const list = document.getElementById('farmList');
   list.innerHTML = '';
+  const imgArr = state.currentLevel === 0 ? FARM_IMAGES : null;
+
   for (const def of BUSINESSES) {
     const bs = getBizState(def.id);
     const unlocked = isUnlocked(def.id);
@@ -46,40 +53,43 @@ export function renderFarms() {
 
     let buyLabel = locked ? `🔒 ${fmt(def.unlockCost)}` : maxed ? '✅ Maximum' : `Koupit ×${amount} · ${fmt(cost)}`;
 
+    const imgSrc = imgArr ? imgArr[def.id] : null;
+    const imgHTML = imgSrc
+      ? `<img src="${imgSrc}" class="fc-img" alt="${def.name}" loading="lazy">`
+      : `<span class="fc-img-emoji">${def.emoji}</span>`;
+
     const card = document.createElement('div');
     card.id = `fc-${def.id}`;
     card.className = `farm-card${locked?' locked':''}${canAfford&&!locked?' affordable':''}`;
     card.style.setProperty('--card-color', def.color);
     card.innerHTML = `
-      <div class="fc-top">
-        <div class="fc-icon" style="background:${def.bg}">
-          ${def.emoji}
-          ${bs.count>0?`<span class="badge">${bs.count}</span>`:''}
-        </div>
-        <div class="fc-meta">
-          <div class="fc-name">${def.name}</div>
-          <div class="fc-stats">
-            <span class="hi">💰 ${fmt(income)}</span>
-            <span class="dot">·</span><span>⏱ ${(def.timer*(bs.timerMult||1)).toFixed(1).replace('.0','')}s</span>
-            <span class="dot">·</span><span class="hi2">×${getMilestoneMult(def.id)}</span>
-          </div>
-        </div>
+      <div class="fc-img-wrap" style="background:${def.bg}">
+        ${imgHTML}
+        ${bs.count>0?`<span class="badge">${bs.count}</span>`:''}
       </div>
-      <div class="fc-milestones">${msBadges}</div>
-      ${msProgressHTML}
-      ${locked
-        ? `<div class="fc-lock-info">Potřeba celkem: ${fmt(def.unlockCost)}</div>`
-        : `<div class="fc-progress" id="fp-${def.id}">
-             <div class="fc-progress-bar" id="pb-${def.id}" style="background:${def.color};transform:scaleX(${bs.progress||0})"></div>
-             <div class="fc-progress-label" id="pl-${def.id}">${bs.count>0?'Připraveno!':'Kup první!'}</div>
-           </div>`
-      }
-      <div class="fc-actions">
-        ${!locked && bs.count>0
-          ? `<button class="fc-harvest-btn" id="hb-${def.id}">▶</button>`
-          : `<div style="width:52px"></div>`
+      <div class="fc-body">
+        <div class="fc-name">${def.name}</div>
+        <div class="fc-milestones">${msBadges}</div>
+        <div class="fc-stats">
+          <span class="hi">💰 ${fmt(income)}</span>
+          <span class="dot">·</span><span>⏱ ${(def.timer*(bs.timerMult||1)).toFixed(1).replace('.0','')}s</span>
+          <span class="dot">·</span><span class="hi2">×${getMilestoneMult(def.id)}</span>
+        </div>
+        ${msProgressHTML}
+        ${locked
+          ? `<div class="fc-lock-info">Potřeba celkem: ${fmt(def.unlockCost)}</div>`
+          : `<div class="fc-progress" id="fp-${def.id}">
+               <div class="fc-progress-bar" id="pb-${def.id}" style="background:${def.color};transform:scaleX(${bs.progress||0})"></div>
+               <div class="fc-progress-label" id="pl-${def.id}">${bs.count>0?'Připraveno!':'Kup první!'}</div>
+             </div>`
         }
-        <button class="fc-buy-btn${locked?' locked-btn':''}${maxed?' maxed-btn':''}" id="bb-${def.id}"${!canAfford||maxed?' disabled':''}>${buyLabel}</button>
+        <div class="fc-actions">
+          ${!locked && bs.count>0
+            ? `<button class="fc-harvest-btn" id="hb-${def.id}">▶</button>`
+            : `<div style="width:44px"></div>`
+          }
+          <button class="fc-buy-btn${locked?' locked-btn':''}${maxed?' maxed-btn':''}" id="bb-${def.id}"${!canAfford||maxed?' disabled':''}>${buyLabel}</button>
+        </div>
       </div>
     `;
     list.appendChild(card);

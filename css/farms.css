@@ -32,24 +32,31 @@
 
 /* ─── IMAGE COLUMN ─────────────────────────── */
 .fc-img-wrap {
-  width: 86px;
+  width: 130px;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  align-self: stretch;
   overflow: hidden;
+  padding: 3px 0 3px 3px;
+  box-sizing: border-box;
+  position: relative;
 }
 .fc-img {
-  width: 74px;
-  height: 74px;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
+  border-radius: 4px;
   pointer-events: none;
 }
 .fc-img-emoji {
-  font-size: 2.8rem;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.2rem;
   line-height: 1;
+  border-radius: 4px;
 }
 .fc-img-wrap .badge {
   position: absolute;
@@ -71,7 +78,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  padding: 7px 10px 8px;
+  padding: 7px 12px 8px 10px;
 }
 .fc-name {
   font-size: .84rem;

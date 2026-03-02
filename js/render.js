@@ -76,7 +76,7 @@ export function renderFarms() {
           ? `<button class="fc-harvest-btn" id="hb-${def.id}">▶</button>`
           : `<div style="width:52px"></div>`
         }
-        <button class="fc-buy-btn${locked?' locked-btn':''}" id="bb-${def.id}">${buyLabel}</button>
+        <button class="fc-buy-btn${locked?' locked-btn':''}" id="bb-${def.id}"${!canAfford?' disabled':''}>${buyLabel}</button>
       </div>
     `;
     list.appendChild(card);
@@ -139,7 +139,10 @@ export function renderUpgrades() {
   globalHeader.textContent = '🌍 Globální boostery · aktuálně ×' + getGlobalMult();
   list.appendChild(globalHeader);
 
-  for (const upg of GLOBAL_UPGRADES) {
+  for (const upg of [...GLOBAL_UPGRADES].sort((a,b) => {
+    const ab = !!state.globalUpgrades[a.id], bb = !!state.globalUpgrades[b.id];
+    return ab !== bb ? (ab ? 1 : -1) : a.price - b.price;
+  })) {
     const bought = !!state.globalUpgrades[upg.id];
     const canAfford = state.money >= upg.price;
     const el = document.createElement('div');
@@ -161,7 +164,10 @@ export function renderUpgrades() {
   farmHeader.textContent = '⚡ Upgrady farem';
   list.appendChild(farmHeader);
 
-  for (const upg of [...UPGRADES].sort((a,b) => a.price - b.price)) {
+  for (const upg of [...UPGRADES].sort((a,b) => {
+    const ab = !!state.upgrades[a.id], bb = !!state.upgrades[b.id];
+    return ab !== bb ? (ab ? 1 : -1) : a.price - b.price;
+  })) {
     const bought = !!state.upgrades[upg.id];
     const canAfford = state.money>=upg.price;
     const bizUnlocked = isUnlocked(upg.bizId);

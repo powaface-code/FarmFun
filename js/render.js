@@ -67,7 +67,7 @@ export function renderFarms() {
       ${locked
         ? `<div class="fc-lock-info">Potřeba celkem: ${fmt(def.unlockCost)}</div>`
         : `<div class="fc-progress" id="fp-${def.id}">
-             <div class="fc-progress-bar" id="pb-${def.id}" style="width:0%;background:${def.color}"></div>
+             <div class="fc-progress-bar" id="pb-${def.id}" style="background:${def.color};transform:scaleX(${bs.progress||0})"></div>
              <div class="fc-progress-label" id="pl-${def.id}">${bs.count>0?'Připraveno!':'Kup první!'}</div>
            </div>`
       }

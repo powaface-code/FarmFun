@@ -3,7 +3,7 @@ import { state } from './state.js';
 import { getBizState, getIncome } from './formulas.js';
 import { fmt } from './format.js';
 import { saveState } from './save.js';
-import { progressTimers, startProgress } from './timers.js';
+import { progressTimers, startProgress, tickAllProgress } from './timers.js';
 import { render, renderFarms } from './render.js';
 import { notify } from './notify.js';
 import {
@@ -46,6 +46,7 @@ let lastWeatherTick = 0;
 // ─── Master tick: 100ms místo 60fps rAF ──────
 function masterTick() {
   const now = Date.now();
+  tickAllProgress();
   updateMoneyDisplay();
   if (now - lastAffordCheck > 500)  { updateAffordability(); updateNotifications(); lastAffordCheck = now; }
   if (now - lastNotifCheck  > 2000) { updateStats(); lastNotifCheck = now; }
@@ -85,8 +86,7 @@ function init() {
     if (document.hidden) {
       Object.keys(progressTimers).forEach(id => {
         const bs = getBizState(Number(id));
-        bs.remainingMs = Math.max(0, (bs.effectiveDuration||0)*1000*(1-bs.progress));
-        clearInterval(progressTimers[id]);
+        bs.remainingMs = Math.max(0, (bs._totalMs||0)*(1-bs.progress));
         delete progressTimers[id];
         bs.running = false; bs.progress = 0;
       });
@@ -101,7 +101,7 @@ function init() {
 
   for (const b of BUSINESSES) {
     const bs=getBizState(b.id);
-    if (bs.managerHired && bs.count>0) setTimeout(()=>startProgress(b.id), 100+b.id*60);
+    if (bs.managerHired && bs.count>0) startProgress(b.id);
   }
 
   if (window._offlineMsg) {

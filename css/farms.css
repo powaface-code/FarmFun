@@ -152,8 +152,10 @@
 }
 .fc-progress-bar {
   height: 100%;
+  width: 100%;
   border-radius: 50px;
-  transition: width .07s linear;
+  transform-origin: left center;
+  will-change: transform;
   position: relative;
 }
 /* shimmer animace odebrána — GPU compositing na mobilu */

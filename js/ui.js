@@ -44,7 +44,6 @@ export function doPrestige() {
   if (prestigeSeeds<1) { notify('Vydělejte 1 mil. Kč pro první prestiž!'); closePrestige(); return; }
   state.totalSeeds += prestigeSeeds;
   state.prestigeCount++;
-  for (const id in progressTimers) clearInterval(progressTimers[id]);
   Object.keys(progressTimers).forEach(k=>delete progressTimers[k]);
   state.money=0; state.totalEarned=0; state.managers={}; state.upgrades={};
   state.businesses = BUSINESSES.map(b=>({id:b.id,count:b.id===0?1:0,progress:0,running:false,managerHired:false,upgradeMult:1,timerMult:1}));

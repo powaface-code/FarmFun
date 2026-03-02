@@ -4,46 +4,83 @@ import { getBizState, getBizDef, getIncome, isUnlocked } from './formulas.js';
 import { fmt } from './format.js';
 import { isFrozen, getFogTimerMult, applyGoldenHarvest } from './weather.js';
 
+// Flagy běžících farem (místo per-farm setInterval)
 export const progressTimers = {};
 
 export function startProgress(bizId) {
   const bs = getBizState(bizId), def = getBizDef(bizId);
   if (bs.running || bs.count===0) return;
-  if (isFrozen(bizId)) return; // zmrazeno mrazem
-  bs.running=true; bs.progress=0;
-  clearInterval(progressTimers[bizId]);
-  const effectiveDur = def.timer*(bs.timerMult||1)*getFogTimerMult();
+  if (isFrozen(bizId)) return;
+  bs.running = true; bs.progress = 0;
+  const effectiveDur = def.timer * (bs.timerMult || 1) * getFogTimerMult();
   bs.effectiveDuration = effectiveDur;
   const totalMs = effectiveDur * 1000;
-  // Při obnově po skrytí tabu: pokračovat ze zbývajícího času
   const resumeMs = bs.remainingMs || totalMs;
   delete bs.remainingMs;
-  const startTime = Date.now() - (totalMs - resumeMs);
-  progressTimers[bizId] = setInterval(()=>{
-    bs.progress = Math.min((Date.now()-startTime)/totalMs, 1);
-    updateProgressBar(bizId);
-    if (bs.progress>=1) {
-      clearInterval(progressTimers[bizId]);
-      delete progressTimers[bizId];
-      bs.running=false; bs.progress=0;
-      const income = applyGoldenHarvest(bizId, getIncome(bizId));
-      state.money+=income; state.totalEarned+=income;
-      showFloatMoney(bizId, income);
-      if (bs.managerHired) startProgress(bizId);
-      else { updateProgressBar(bizId); updateHarvestBtn(bizId); }
-    }
-  }, 100);
+  bs._startTime = Date.now() - (totalMs - resumeMs);
+  bs._totalMs = totalMs;
+  progressTimers[bizId] = true;
   updateHarvestBtn(bizId);
 }
 
+// ─── Jeden tick pro VŠECHNY farmy (voláno z masterTick) ──
+let _lastLabel = 0;
+
+export function tickAllProgress() {
+  const now = Date.now();
+  const doLabel = now - _lastLabel >= 250;
+  if (doLabel) _lastLabel = now;
+
+  for (const def of BUSINESSES) {
+    const bizId = def.id;
+    if (!progressTimers[bizId]) continue;
+    const bs = getBizState(bizId);
+    if (!bs.running) { delete progressTimers[bizId]; continue; }
+
+    bs.progress = Math.min((now - bs._startTime) / bs._totalMs, 1);
+
+    // GPU composited transform (žádný layout recalc)
+    const bar = document.getElementById(`pb-${bizId}`);
+    if (bar) bar.style.transform = `scaleX(${bs.progress})`;
+
+    // Label update throttled na ~250ms
+    if (doLabel) {
+      const lbl = document.getElementById(`pl-${bizId}`);
+      if (lbl) {
+        const dur = bs.effectiveDuration || def.timer*(bs.timerMult||1);
+        lbl.textContent = ((1-bs.progress)*dur).toFixed(1)+'s';
+      }
+    }
+
+    // Sklizeň hotová
+    if (bs.progress >= 1) {
+      delete progressTimers[bizId];
+      bs.running = false; bs.progress = 0;
+      const income = applyGoldenHarvest(bizId, getIncome(bizId));
+      state.money += income; state.totalEarned += income;
+      showFloatMoney(bizId, income);
+      if (bs.managerHired) {
+        startProgress(bizId);
+      } else {
+        if (bar) bar.style.transform = 'scaleX(0)';
+        const lbl = document.getElementById(`pl-${bizId}`);
+        if (lbl) lbl.textContent = 'Připraveno!';
+        updateHarvestBtn(bizId);
+      }
+    }
+  }
+}
+
+// ─── Pomocné funkce pro external calls ─────────
 export function updateProgressBar(bizId) {
   const bar = document.getElementById(`pb-${bizId}`);
-  const lbl = document.getElementById(`pl-${bizId}`);
   if (!bar) return;
-  const bs = getBizState(bizId), def = getBizDef(bizId);
-  bar.style.width = (bs.progress*100)+'%';
+  const bs = getBizState(bizId);
+  bar.style.transform = `scaleX(${bs.progress})`;
+  const lbl = document.getElementById(`pl-${bizId}`);
   if (lbl) {
     if (bs.running) {
+      const def = getBizDef(bizId);
       const dur = bs.effectiveDuration || def.timer*(bs.timerMult||1);
       lbl.textContent = ((1-bs.progress)*dur).toFixed(1)+'s';
     } else lbl.textContent = bs.count>0 ? 'Připraveno!' : 'Kup první!';
@@ -81,9 +118,7 @@ export function restartProgressIfRunning(bizId) {
   if (!bs.running) return;
   const def = getBizDef(bizId);
   const newEffective = def.timer * (bs.timerMult || 1) * getFogTimerMult();
-  // Preserve proportional remaining time on the new (shorter) timer
   bs.remainingMs = (1 - bs.progress) * newEffective * 1000;
-  clearInterval(progressTimers[bizId]);
   delete progressTimers[bizId];
   bs.running = false;
   bs.progress = 0;

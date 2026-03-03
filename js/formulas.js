@@ -5,12 +5,12 @@ import { getWeatherMult, getSeasonMult, getButterflyMult } from './weather.js';
 export const getBizState = id => state.businesses[id];
 export const getBizDef   = id => BUSINESSES[id];
 
-// Vrátí extra slevu 0.20 pokud je hráč v poslední fázi (za předposledním milníkem)
+// Vrátí extra slevu 0.05 pokud je hráč v poslední fázi (za předposledním milníkem)
 function lastLevelMult(bizId) {
   const ms = getBizDef(bizId).milestones;
   if (ms.length < 2) return 1;
   const secondToLast = ms[ms.length - 2];
-  return getBizState(bizId).count >= secondToLast.at ? 0.20 : 1;
+  return getBizState(bizId).count >= secondToLast.at ? 0.05 : 1;
 }
 
 export function calcCost(bizId, amount) {

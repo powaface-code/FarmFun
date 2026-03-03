@@ -68,7 +68,8 @@ export function renderFarms() {
     card.innerHTML = `
       <div class="fc-img-wrap">
         ${imgHTML}
-        ${bs.count>0?`<span class="badge">${bs.count}</span>`:''}
+        ${bs.count>0?`<span class="fc-count-badge">${bs.count}</span>`:''}
+        ${!locked && bs.count>0?`<button class="fc-harvest-btn" id="hb-${def.id}">▶</button>`:''}
       </div>
       <div class="fc-body">
         <div class="fc-name">${def.name}</div>
@@ -86,13 +87,7 @@ export function renderFarms() {
                <div class="fc-progress-label" id="pl-${def.id}">${bs.count>0?'Připraveno!':'Kup první!'}</div>
              </div>`
         }
-        <div class="fc-actions">
-          ${!locked && bs.count>0
-            ? `<button class="fc-harvest-btn" id="hb-${def.id}">▶</button>`
-            : `<div style="width:44px"></div>`
-          }
-          <button class="fc-buy-btn${locked?' locked-btn':''}${maxed?' maxed-btn':''}" id="bb-${def.id}"${!canAfford||maxed?' disabled':''}>${buyLabel}</button>
-        </div>
+        <button class="fc-buy-btn${locked?' locked-btn':''}${maxed?' maxed-btn':''}" id="bb-${def.id}"${!canAfford||maxed?' disabled':''}>${buyLabel}</button>
       </div>
     `;
     list.appendChild(card);

@@ -37,44 +37,47 @@
 
 /* ─── IMAGE COLUMN ─────────────────────────── */
 .fc-img-wrap {
-  width: 130px;
+  width: 92px;
   flex-shrink: 0;
-  align-self: stretch;
-  overflow: hidden;
-  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px;
+  gap: 5px;
   box-sizing: border-box;
   position: relative;
+  overflow: hidden;
 }
 .fc-img {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   object-fit: cover;
   display: block;
-  border-radius: var(--r2);
+  border-radius: 12px;
   pointer-events: none;
+  flex-shrink: 0;
 }
 .fc-img-emoji {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3.2rem;
+  font-size: 2.6rem;
   line-height: 1;
-  border-radius: var(--r2);
+  border-radius: 12px;
+  flex-shrink: 0;
 }
-.fc-img-wrap .badge {
-  position: absolute;
-  bottom: 4px; right: 4px;
+.fc-count-badge {
   background: var(--re);
   color: #fff;
   font-size: .56rem;
   font-weight: 800;
-  padding: 2px 5px;
+  padding: 2px 7px;
   border-radius: 20px;
-  border: 2px solid var(--s1);
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(0,0,0,.5);
+  flex-shrink: 0;
 }
 
 /* ─── CONTENT COLUMN ───────────────────────── */
@@ -196,16 +199,10 @@
   letter-spacing: .2px;
 }
 
-/* Actions row */
-.fc-actions {
-  display: flex;
-  gap: 7px;
-  margin-top: 5px;
-}
-
 .fc-harvest-btn {
-  width: 44px; height: 38px;
+  width: 100%; height: 34px;
   flex-shrink: 0;
+  margin-top: auto;
   border-radius: var(--r1);
   border: 1px solid var(--bd);
   background: var(--s3);
@@ -234,8 +231,9 @@
 .fc-harvest-btn:disabled { opacity: .3; cursor: default; transform: none; }
 
 .fc-buy-btn {
-  flex: 1;
+  width: 100%;
   height: 38px;
+  margin-top: 5px;
   border-radius: var(--r1);
   border: 1px solid rgba(245,200,66,.2);
   background: var(--am-dim);

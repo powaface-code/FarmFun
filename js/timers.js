@@ -123,7 +123,7 @@ export function updateHarvestBtn(bizId) {
   if (!btn) return;
   const bs = getBizState(bizId);
   if (bs.managerHired) {
-    btn.textContent='🤖'; btn.className='fc-harvest-btn auto'; btn.disabled=true;
+    btn.textContent='👨‍🌾'; btn.className='fc-harvest-btn auto'; btn.disabled=true;
   } else if (bs.running) {
     btn.textContent='⏳'; btn.className='fc-harvest-btn'; btn.disabled=true;
   } else {

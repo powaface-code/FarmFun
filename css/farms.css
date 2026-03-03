@@ -46,7 +46,7 @@
   flex-shrink: 0;
   align-self: stretch;
   overflow: hidden;
-  padding: 5px;
+  padding: 3px;
   box-sizing: border-box;
   position: relative;
 }
@@ -55,7 +55,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  border-radius: 11px;
+  border-radius: 13px;
   pointer-events: none;
 }
 .fc-img-emoji {
@@ -66,7 +66,7 @@
   justify-content: center;
   font-size: 3.2rem;
   line-height: 1;
-  border-radius: 11px;
+  border-radius: 13px;
 }
 .fc-img-wrap .badge {
   position: absolute;

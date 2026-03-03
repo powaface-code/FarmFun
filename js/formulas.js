@@ -5,18 +5,28 @@ import { getWeatherMult, getSeasonMult, getButterflyMult } from './weather.js';
 export const getBizState = id => state.businesses[id];
 export const getBizDef   = id => BUSINESSES[id];
 
+// Vrátí extra slevu 0.20 pokud je hráč v poslední fázi (za předposledním milníkem)
+function lastLevelMult(bizId) {
+  const ms = getBizDef(bizId).milestones;
+  if (ms.length < 2) return 1;
+  const secondToLast = ms[ms.length - 2];
+  return getBizState(bizId).count >= secondToLast.at ? 0.20 : 1;
+}
+
 export function calcCost(bizId, amount) {
   const def = getBizDef(bizId), owned = getBizState(bizId).count;
-  if (amount===1) return def.baseCost * Math.pow(COST_GROWTH, owned) * COST_MULT;
-  return def.baseCost * Math.pow(COST_GROWTH, owned) * (Math.pow(COST_GROWTH,amount)-1) / (COST_GROWTH-1) * COST_MULT;
+  const mult = COST_MULT * lastLevelMult(bizId);
+  if (amount===1) return def.baseCost * Math.pow(COST_GROWTH, owned) * mult;
+  return def.baseCost * Math.pow(COST_GROWTH, owned) * (Math.pow(COST_GROWTH,amount)-1) / (COST_GROWTH-1) * mult;
 }
 
 export function calcMaxBuy(bizId) {
   const def = getBizDef(bizId), owned = getBizState(bizId).count;
+  const mult = COST_MULT * lastLevelMult(bizId);
   let lo=1, hi=2000, best=0;
   while (lo<=hi) {
     const mid = Math.floor((lo+hi)/2);
-    const cost = def.baseCost * Math.pow(COST_GROWTH,owned) * (Math.pow(COST_GROWTH,mid)-1) / (COST_GROWTH-1) * COST_MULT;
+    const cost = def.baseCost * Math.pow(COST_GROWTH,owned) * (Math.pow(COST_GROWTH,mid)-1) / (COST_GROWTH-1) * mult;
     if (cost<=state.money) { best=mid; lo=mid+1; } else hi=mid-1;
   }
   return best;

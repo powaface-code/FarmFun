@@ -3,6 +3,16 @@ export function fmtInt(n) {
   return Math.floor(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
+// Čísla bez "Kč": tečka jako oddělovač tisíců pod 1 mil, nad tím tier (mil, mld, ...)
+export function fmtNum(n) {
+  if (!isFinite(n) || isNaN(n)) return '0';
+  if (n < 1e6) return fmtInt(n);
+  for (let i = _T.length - 1; i >= 0; i--) {
+    if (n >= _T[i][0]) return (n / _T[i][0]).toFixed(_T[i][2]) + ' ' + _T[i][1];
+  }
+  return fmtInt(n);
+}
+
 // Každá řada = 10^3 navíc; latinské číselné předpony (1–20)
 const _T = [
   [1e3,  'tis',  1],

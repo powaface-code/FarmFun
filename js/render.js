@@ -63,10 +63,13 @@ export function renderFarms() {
 
     const card = document.createElement('div');
     card.id = `fc-${def.id}`;
-    card.className = `farm-card${locked?' locked':''}${canAfford&&!locked?' affordable':''}`;
+    card.className = `farm-card${locked?' locked':''}${canAfford&&!locked?' affordable':''}${maxed?' maxed':''}`;
     card.style.setProperty('--card-color', def.color);
+    const wrapBg = maxed
+      ? `color-mix(in srgb, ${def.color} 45%, ${def.bg})`
+      : def.bg;
     card.innerHTML = `
-      <div class="fc-img-wrap" style="background:${def.bg}">
+      <div class="fc-img-wrap" style="background:${wrapBg}">
         ${imgHTML}
         ${bs.count>0?`<span class="badge">${bs.count}</span>`:''}
       </div>

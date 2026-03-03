@@ -29,6 +29,9 @@
   opacity: .35;
   filter: saturate(.3);
 }
+.farm-card.maxed .fc-img-wrap {
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--card-color) 75%, transparent);
+}
 
 /* ─── IMAGE COLUMN ─────────────────────────── */
 .fc-img-wrap {

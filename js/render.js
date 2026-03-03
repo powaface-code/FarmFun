@@ -21,6 +21,9 @@ const FARM_IMAGES = [
 ];
 
 export function renderFarms() {
+  const scrollEl = document.scrollingElement || document.documentElement;
+  const savedScroll = scrollEl.scrollTop;
+
   const list = document.getElementById('farmList');
   list.innerHTML = '';
   const imgArr = state.currentLevel === 0 ? FARM_IMAGES : null;
@@ -115,6 +118,7 @@ export function renderFarms() {
       card.appendChild(pestEl);
     }
   }
+  requestAnimationFrame(() => { scrollEl.scrollTop = savedScroll; });
 }
 
 export function renderManagers() {

@@ -31,9 +31,8 @@
 }
 .farm-card.maxed {
   border-color: var(--card-color);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--card-color) 80%, transparent),
-              0 0 16px color-mix(in srgb, var(--card-color) 55%, transparent),
-              0 0 40px color-mix(in srgb, var(--card-color) 25%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--card-color) 40%, transparent),
+              0 4px 20px color-mix(in srgb, var(--card-color) 20%, transparent);
 }
 
 /* ─── IMAGE COLUMN ─────────────────────────── */
